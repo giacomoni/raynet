@@ -1,0 +1,31 @@
+name: Build documentation with Sphinx
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+    - name: commit gh-pages
+      run: |
+        git clone https://github.com/omnetpp/cmake.git --branch gh-pages --single-branch gh-pages
+        rsync -a --delete --exclude=/.git docs/_build/html/ gh-pages/
+        cd gh-pages
+        touch .nojekyll
+        git config --local user.email '<>'
+        git config --local user.name 'GitHub Action'
+        git add .
+        git commit -m "update documentation" -a || true
+    - name: push gh-pages
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        directory: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+

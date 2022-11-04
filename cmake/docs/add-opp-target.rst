@@ -1,0 +1,1 @@
+.. cmake-module:: ../AddOppTarget.cmake
