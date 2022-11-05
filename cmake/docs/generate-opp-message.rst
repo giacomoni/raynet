@@ -1,1 +1,0 @@
-.. cmake-module:: ../GenerateOppMessage.cmake
