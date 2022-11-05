@@ -1,0 +1,3 @@
+package ecmp;
+
+@license(LGPL);

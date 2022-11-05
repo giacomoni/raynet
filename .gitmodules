@@ -6,9 +6,9 @@
 	url = ../../pybind/pybind11
 	branch = stable
 [submodule "ecmp"]
-	path = ecmp
+	path = simlibs/ecmp
 	url = https://github.com/giacomoni/ecmp.git
 [submodule "rdp"]
-	path = rdp
+	path = simlibs/rdp
 	url = https://github.com/giacomoni/rdp
 	branch = delayexp
