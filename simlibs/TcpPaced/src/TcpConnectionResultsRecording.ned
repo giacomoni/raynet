@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package mltcp.transportlayer;
+package TcpPaced;
 
 import inet.transportlayer.tcp.TcpConnection;
 

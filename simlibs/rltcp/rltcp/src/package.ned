@@ -1,3 +1,0 @@
-package mltcp;
-
-@license(LGPL);

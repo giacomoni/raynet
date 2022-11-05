@@ -13,16 +13,14 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
-package mltcp.transportlayer.rl;
+package TcpPaced;
 
-import mltcp.transportlayer.rl.RLTcp;
+import inet.transportlayer.tcp.Tcp;
 
-// extend RLTcp to inherit the relevant parameters but ...
-simple RLPacedTcp extends RLTcp
+simple PacedTcp extends Tcp
 {
     parameters:
-    	// ... use the PacedTcp C++ class
         @class(PacedTcp);
 }

@@ -15,38 +15,21 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "MonitorInterval.h"
+package RLCC.tcp;
 
-namespace learning {
+import inet.transportlayer.tcp.Tcp;
 
-MonitorInterval::MonitorInterval(uint32 _miNumber, uint32 _firstSeqSent, simtime_t _miStart, bool _isFirstPacketSent, bool _deferredTicking, double _action)
+simple RLTcp extends Tcp
 {
-    ackForLastSegmentTime = SimTime::ZERO;
-    miNumber = _miNumber;
-    miStart = _miStart;
-    firstSndMax = _firstSeqSent;
-    isFirstSegmentSent =  _isFirstPacketSent;
-    deferredTicking = _deferredTicking;
-    action = _action;
-    avgRtt = 0;
+    parameters:
+        @class(RLTcp);
 
-}
+        int maxWindow; 					// maximum window size 
+        int stateSize; 					// dimension of the state space
+        int maxObsCount; 				// max number of observations for a single state
+        double ewmaWeight; 				// weight for the moving average of state variables (as in Tcp-Ex Machina)
+        double delayWeightReward; 		// weight for throughput vs. delay trade-off
 
-MonitorInterval::~MonitorInterval()
-{
-}
-
-MonitorIntervalsHandler::MonitorIntervalsHandler()
-{
-    counter = 0;
-}
-
-MonitorIntervalsHandler::~MonitorIntervalsHandler()
-{
-}
-
-void MonitorIntervalsHandler::addMI(shared_ptr<MonitorInterval> _mi)
-{
-    incompleteMis.push_back(_mi);
-}
+        @signal[stepData];				// step data signal
+        @signal[actionQuery];			// action query signal
 }
