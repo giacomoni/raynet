@@ -1,11 +1,11 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/omnetpp/cmake.git
-[submodule "ecmp"]
-	path = simlibs/ecmp
-	url = https://github.com/giacomoni/ecmp.git
-	branch = master
 [submodule "extern/pybind11"]
 	path = extern/pybind11
 	url = ../../pybind/pybind11
 	branch = stable
+[submodule "simlibs/rdp"]
+	path = simlibs/rdp
+	url = git@github.com:giacomoni/rdp.git
+	branch = delayexp
