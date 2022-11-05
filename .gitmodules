@@ -8,6 +8,7 @@
 [submodule "ecmp"]
 	path = simlibs/ecmp
 	url = https://github.com/giacomoni/ecmp.git
+	branch = master
 [submodule "rdp"]
 	path = simlibs/rdp
 	url = https://github.com/giacomoni/rdp
