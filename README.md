@@ -18,12 +18,16 @@ If you require to build TCP/IP simulation models, or reproduce the results of ou
 
 ## Dependencies
 
+The project has been tested on Ubuntu 20.04, with Omnet++ v5.6.2, pybind11 v2.7.1. Required dependencies are:
+- Omnet++ 5.6.2
+- Ray 1.13.0
 
-
-
-The project has been tested on Ubuntu 20.04, with Omnet++ v5.6.2, pybind11 v2.7.1.
+To be able to reproduce congestion control results, you will also need to install:
+- INET 4.2.5
 
 ## Installation instrutions
+
+### Install dependencies
 
 All C++ libraries mentioned below should be installed in the HOME directory if you want to use our building scripts off the shelf. Change the path references in the file accordingly otherwise. 
 
@@ -31,9 +35,15 @@ Download [Omnet++](https://omnetpp.org/download/) and install in home directory,
 
 Download [INET]() and install in home directory, following the instrusctions 
 
-Clone this repository. 
+### Build RayNet
 
-## Create your custom model
+
+
+## Train with Rayent
+
+### Configure environment
+
+### Configure trainer
 
 The project should be able to handle any custom model. 
 
@@ -65,10 +75,4 @@ cmake ../
 make
 ```
 
-## Test the module
-If you have built the module provided in this repo, then you can modify and run the `test.py` to test the newly created module:
-
-```
-python3 test.py
-```
 
