@@ -6,7 +6,7 @@ This repository contains the source code for the integration of Omnet++ and Ray/
 
 The system integrates C++ library and python libraries through pybindings. The figure below depicts the different packages/libraries used by RayNet:
 
-<img src="https://github.com/giacomoni/raynet//blob/main/docs/images/libraries.png" width="48">
+<img src="/docs/images/libraries.png" width="48">
 
 Raynet requires the following third party (open-source) software:
 - Omnet++
