@@ -30,18 +30,42 @@ The project has been tested on Ubuntu 20.04, with Omnet++ v5.6.2, pybind11 v2.7.
 To be able to reproduce congestion control results, you will also need to install:
 - INET 4.2.5
 
-## Installation instrutions
+## Building instrutions
 
-### Install dependencies
+Building RayNet consists in several compilation and linkink steps:
 
-All C++ libraries mentioned below should be installed in the HOME directory if you want to use our building scripts off the shelf. Change the path references in the file accordingly otherwise. 
+- Compile Omnet++ libraries
+- Compile the required simulation libraries (e.g. INET) and **RLComponents**; 
+- Compile the python binding module distributed with this repository and link with libraries above
+- Set up a python interpreter with required packages (Ray/RLlib, tensorflow, etc)
 
-Download [Omnet++](https://omnetpp.org/download/) and install in home directory, following [these](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf) instructions. 
+The new python module can now be imported and used to implement environments following the OpenAI Gym API.
 
-Download [INET]() and install in home directory, following the instrusctions 
+### Step 1 - Build Omnet++ libraries 
 
-### Build RayNet
+Download [Omnet++](https://omnetpp.org/download/) (version 5.6.2) and install in home directory, following [these](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf) instructions. 
 
+### Step 2 - Build simulation libraries.
+
+Libraries should be compiled using the **opp_makemake** utility provided by Omnet++. This utility generates the Makefile to compile library components to be used with Omnet++.
+
+The script _build.sh_ contains instruction to build the simulation components.
+
+### Step 3 - Compile binding module
+
+The binding module is build using **cmake**:
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=[Release | Debug] ../
+```
+
+The output is a pyt5hon module that can be imported as a standard python module. The name of the module is defined in the _CMakeLists.txt_.
+
+### Step 4
+
+RayNet was developped on Python 3.10. 
 
 
 ## Train with Rayent
