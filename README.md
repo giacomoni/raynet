@@ -19,7 +19,7 @@ If you require to build TCP/IP simulation models, or reproduce the results of ou
 
 **RLComponents** is part of our distribution and include ad-hoc components (_Stepper_, _Broker_, _RLInterface_) that allow simulations to run agents that make decisions in a time discrete fashion. 
 
-_Custom Components_ refere to any simulation component that the user may need when modelling simulations. For our RL-driven congestion control protocol, the following libraries are required (_ecmp_, _rdp_), both included as submodules in this repository. 
+_Custom Components_ refers to any simulation component that the user may need when modelling simulations. For our RL-driven congestion control protocol, the following libraries are required (_ecmp_, _rdp_), both included as submodules in this repository. 
 
 ## Dependencies
 
