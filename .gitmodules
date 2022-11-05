@@ -5,3 +5,10 @@
 	path = extern/pybind11
 	url = ../../pybind/pybind11
 	branch = stable
+[submodule "ecmp"]
+	path = ecmp
+	url = https://github.com/giacomoni/ecmp.git
+[submodule "rdp"]
+	path = rdp
+	url = https://github.com/giacomoni/rdp
+	branch = delayexp
