@@ -1,20 +1,25 @@
 # RayNet - RL Training Platform for Network Protocols
 
-## System overview
+## System software components
 
-This repository contains the source code for the integration of Omnet++ and Ray/RLlib and some python scripts to facilitate the generation of interation experience between agents and networking environments. 
+This repository contains RayNet's source code and some scripts to train and evauate RL models. 
 
-The system integrates C++ library and python libraries through pybindings. The figure below depicts the different packages/libraries used by RayNet:
+The system integrates the core Omnet++ discrete event simulator with its linked simulation libraries and Ray/RLlib through pybindings11. The figure below depicts the different packages/libraries in RayNet:
 
 <img src="/docs/images/libraries.png" width="600">
 
-Raynet requires the following third party (open-source) software:
+Raynet requires (at least) the following third party (open-source) software:
 - Omnet++
 - Ray/RLlib
 - Tensorflow or Pytorch
 
-If you require to build TCP/IP simulation models, or reproduce the results of our RL driven congestion control policy, you'll also need:
+If you require to build TCP/IP simulation models, or reproduce the results of our RL-driven congestion control policy, you'll also need:
 - INET
+
+
+**RLComponents** is part of our distribution and include ad-hoc components (_Stepper_, _Broker_, _RLInterface_) that allow simulations to run agents that make decisions in a time discrete fashion. 
+
+_Custom Components_ refere to any simulation component that the user may need when modelling simulations. For our RL-driven congestion control protocol, the following libraries are required (_ecmp_, _rdp_), both included as submodules in this repository. 
 
 ## Dependencies
 
