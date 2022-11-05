@@ -1,18 +1,35 @@
-# OMNET++ Bindings
+# RayNet - RL Training Platform for Network Protocols
 
-The goal of this project is to provide an equivalent API to the Gym.Environment class. Users should be abl then to implement their custom event-driven simulation models and use them as training environment of Reinforcement Learning agents.
+## System overview
 
-Since Omnet++ is written in C++, we use pybind11 to create Python bindings, allowing to call C++ functions directly from Python.
+This repository contains the source code for the integration of Omnet++ and Ray/RLlib and some python scripts to facilitate the generation of interation experience between agents and networking environments. 
 
-## System Requirements and Dependencies
+The system integrates C++ library and python libraries through pybindings. The figure below depicts the different packages/libraries used by RayNet:
 
-The project has been tested on Ubuntu 20.04, with Omnet++ v5.6.2 and pybind11 v2.7.1.
+![My Image](docs/images/libraries.png)
 
-## Installation
+Raynet requires the following third party (open-source) software:
+- Omnet++
+- Ray/RLlib
+- Tensorflow or Pytorch
 
-Download and install [Omnet++](https://omnetpp.org/download/), following [these](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf) instructions.
+If you require to build TCP/IP simulation models, or reproduce the results of our RL driven congestion control policy, you'll also need:
+- INET
 
-Install pybind11 dependencies, as explained [here](https://pybind11.readthedocs.io/en/latest/basics.html). 
+## Dependencies
+
+
+
+
+The project has been tested on Ubuntu 20.04, with Omnet++ v5.6.2, pybind11 v2.7.1.
+
+## Installation instrutions
+
+All C++ libraries mentioned below should be installed in the HOME directory if you want to use our building scripts off the shelf. Change the path references in the file accordingly otherwise. 
+
+Download [Omnet++](https://omnetpp.org/download/) and install in home directory, following [these](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf) instructions. 
+
+Download [INET]() and install in home directory, following the instrusctions 
 
 Clone this repository. 
 
