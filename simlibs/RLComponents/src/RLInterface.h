@@ -19,11 +19,11 @@
 #define INET_LEARNING_RLINTERFACE_RLINTERFACE_H_
 
 #include <omnetpp.h>
-#include "../../../../../model/BrokerData.h"
+#include "BrokerData.h"
 #include <iostream>
 
 
-#include "../../common/rl/rlUtil.h"
+#include "rlUtil.h"
 #include "cobjects.h"
 #include "typedefs.h"
 #include <cmath>

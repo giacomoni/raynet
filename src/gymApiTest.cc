@@ -1,4 +1,4 @@
-#include <SimulationRunner.h>
+#include <CoreEnv.h>
 #include <omnetpp.h>
 #include <unordered_map>
 
@@ -12,7 +12,7 @@ int main(int argc, char **argv){
 
     _iniPath = (string(getenv("HOME"))+string("/RLlibIntegration/configs/ndpconfig_single_flow_eval_with_delay_template_debug.ini")).c_str();
 
-    SimulationRunner* runner = new SimulationRunner();
+    CoreEnv* runner = new CoreEnv();
     runner->initialise(_iniPath);
     auto obs = runner->reset();
 

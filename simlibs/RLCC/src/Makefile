@@ -1,22 +1,22 @@
 #
-# OMNeT++/OMNEST Makefile for $(LIB_PREFIX)RLCC
+# OMNeT++/OMNEST Makefile for $(LIB_PREFIX)src
 #
 # This file was generated with the command:
-#  opp_makemake -M release --make-so -f --deep -I/home/luca/inet4/src -I/home/luca/raynet/simlibs/RLCC -I/home/luca/raynet/simlibs/RLComponents
+#  opp_makemake -M release --make-so -f --deep -I/home/luca/inet4/src -I/home/luca/raynet/simlibs/RLCC -I/home/luca/raynet/simlibs/RLComponents -I/home/luca/raynet/simlibs/TcpPaced -L/home/luca/raynet/simlibs/RLComponents -L/home/luca/raynet/simlibs/TcpPaced -L/home/luca/inet4/src -lINET -lRLComponents -lTcpPaced
 #
 
 # Name of target to be created (-o option)
-TARGET = $(LIB_PREFIX)RLCC$(D)$(SHARED_LIB_SUFFIX)
+TARGET = $(LIB_PREFIX)src$(D)$(SHARED_LIB_SUFFIX)
 TARGET_DIR = .
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I/home/luca/inet4/src -I/home/luca/raynet/simlibs/RLCC -I/home/luca/raynet/simlibs/RLComponents
+INCLUDE_PATH = -I/home/luca/inet4/src -I/home/luca/raynet/simlibs/RLCC -I/home/luca/raynet/simlibs/RLComponents -I/home/luca/raynet/simlibs/TcpPaced
 
 # Additional object and library files to link with
-EXTRA_OBJS = " "
+EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS =
+LIBS = $(LDFLAG_LIBPATH)/home/luca/raynet/simlibs/RLComponents $(LDFLAG_LIBPATH)/home/luca/raynet/simlibs/TcpPaced $(LDFLAG_LIBPATH)/home/luca/inet4/src  -lINET -lRLComponents -lTcpPaced
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
@@ -24,7 +24,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/src/rdp/RLRdpAlg.o $O/src/tcp/RLTcp.o $O/src/tcp/RLTcpNewReno.o $O/src/tcp/RLTcpReno.o
+OBJS = $O/rdp/RLRdpAlg.o $O/tcp/RLTcp.o $O/tcp/RLTcpNewReno.o $O/tcp/RLTcpReno.o
 
 # Message files
 MSGFILES =
@@ -59,6 +59,9 @@ include $(CONFIGFILE)
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
+ifneq ($(TOOLCHAIN_NAME),clangc2)
+LIBS += -Wl,-rpath,$(abspath /home/luca/raynet/simlibs/RLComponents) -Wl,-rpath,$(abspath /home/luca/raynet/simlibs/TcpPaced) -Wl,-rpath,$(abspath /home/luca/inet4/src)
+endif
 
 COPTS = $(CFLAGS) $(IMPORT_DEFINES)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH)

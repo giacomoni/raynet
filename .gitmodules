@@ -9,3 +9,7 @@
 	path = simlibs/rdp
 	url = git@github.com:giacomoni/rdp.git
 	branch = delayexp
+[submodule "simlibs/ecmp"]
+	path = simlibs/ecmp
+	url = git@github.com:giacomoni/ecmp.git
+	branch = master

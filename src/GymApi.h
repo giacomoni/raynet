@@ -1,5 +1,5 @@
-#ifndef __SIMULATION_RUNNER_H_
-#define __SIMULATION_RUNNER_H_
+#ifndef __GYM_API_H_
+#define __GYM_API_H_
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -11,7 +11,7 @@
 #include <tuple>
 #include <omnetpp.h>
 #include <cmdenv/cmddefs.h>
-#include <cmdrlenv.h>
+#include <Cmdrlenv.h>
 #include <envir/sectionbasedconfig.h>
 #include <envir/inifilereader.h>
 #include <Broker.h>
@@ -22,7 +22,7 @@
 using namespace std;
 using namespace omnetpp;
 
-class SimulationRunner{
+class GymApi{
 
     public:
 
@@ -34,7 +34,7 @@ class SimulationRunner{
         InifileReader *inifilePtr;
         bool needsCleaning = false;
 
-        SimulationRunner();
+        GymApi();
 
         void initialise(std::string inipath);
         std::unordered_map<std::string, ObsType > reset();

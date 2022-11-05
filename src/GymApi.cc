@@ -1,11 +1,11 @@
-#include <SimulationRunner.h>
+#include <GymApi.h>
 #include <string>
 
 
-SimulationRunner::SimulationRunner(){   
+GymApi::GymApi(){   
 }
 
-void SimulationRunner::cleanupmemory(){
+void GymApi::cleanupmemory(){
 
     getSimulation()->deleteNetwork();
     cSimulation::setActiveSimulation(nullptr);
@@ -23,7 +23,7 @@ void SimulationRunner::cleanupmemory(){
     
 }
 
-void SimulationRunner::initialise(std::string _iniPath){
+void GymApi::initialise(std::string _iniPath){
     needsCleaning = true;
     // initializations
     CodeFragments::executeAll(CodeFragments::STARTUP);
@@ -52,7 +52,7 @@ void SimulationRunner::initialise(std::string _iniPath){
 }
 
 
- std::unordered_map<std::string, ObsType > SimulationRunner::reset(){
+ std::unordered_map<std::string, ObsType > GymApi::reset(){
     // Reset the environment
     bool isReset = true;
 
@@ -91,7 +91,7 @@ void SimulationRunner::initialise(std::string _iniPath){
     
 }
 
-// std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > SimulationRunner::step(ActionType action){
+// std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > GymApi::step(ActionType action){
     
 //     std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > returnTuple;
 //     bool isReset = false;
@@ -109,7 +109,7 @@ void SimulationRunner::initialise(std::string _iniPath){
 //     return returnTuple;
 // }
 
-std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > SimulationRunner::step(std::unordered_map<std::string, ActionType> actions){
+std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > GymApi::step(std::unordered_map<std::string, ActionType> actions){
     
     std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > returnTuple;
     bool isReset = false;
@@ -169,7 +169,7 @@ std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::st
 }
 
 
-void SimulationRunner::shutdown(){
+void GymApi::shutdown(){
     env->endSimulation();
 }
   
