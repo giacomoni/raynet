@@ -32,8 +32,8 @@
 #include <inet/transportlayer/tcp/TcpSendQueue.h>
 #include <inet/transportlayer/tcp/flavours/TcpReno.h>
 
-#include "../../common/rl/MonitorInterval.h"
-#include "../PacedTcpConnection.h"
+#include "MonitorInterval.h"
+#include "PacedTcpConnection.h"
 
 #include "RLInterface.h"
 

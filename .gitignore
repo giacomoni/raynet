@@ -7,7 +7,7 @@ simlibs/TcpPaced/src/TcpPaced
 simlibs/TcpPaced/src/Makefile
 simlibs/RLCC/src/RLCC_dbg
 simlibs/RLCC/src/RLCC
-simlibs/RLCC/src/RLCC
+simlibs/RLCC/src/Makefile
 
 */src/out/*
 

@@ -1,4 +1,4 @@
-#include <CoreEnv.h>
+#include <GymApi.h>
 #include <omnetpp.h>
 #include <unordered_map>
 
@@ -12,9 +12,9 @@ int main(int argc, char **argv){
 
     _iniPath = (string(getenv("HOME"))+string("/RLlibIntegration/configs/ndpconfig_single_flow_eval_with_delay_template_debug.ini")).c_str();
 
-    CoreEnv* runner = new CoreEnv();
-    runner->initialise(_iniPath);
-    auto obs = runner->reset();
+    GymApi* gymapi = new GymApi();
+    gymapi->initialise(_iniPath);
+    auto obs = gymapi->reset();
 
     std::string agentId;
 
@@ -26,16 +26,16 @@ int main(int argc, char **argv){
 
     
         std::unordered_map<std::string, ActionType> actions({ {agentId, 0} });
-        auto ret = runner->step(actions);
+        auto ret = gymapi->step(actions);
         done = std::get<2>(ret)["__all__"];
         obs = std::get<0>(ret);
     }
 
-    runner->shutdown();
-    runner->cleanupmemory();
+    gymapi->shutdown();
+    gymapi->cleanupmemory();
     
-    // runner->initialise(_iniPath);
-    // obs = runner->reset();
+    // gymapi->initialise(_iniPath);
+    // obs = gymapi->reset();
 
     // done = false;
     // while (!done) {
@@ -45,15 +45,15 @@ int main(int argc, char **argv){
 
     
     //     std::unordered_map<std::string, ActionType> actions({ {agentId, 0} });
-    //     auto ret = runner->step(actions);
+    //     auto ret = gymapi->step(actions);
     //     done = std::get<2>(ret)["__all__"];
     //     obs = std::get<0>(ret);
     // }
 
-    // runner->shutdown();
-    // runner->cleanupmemory();
+    // gymapi->shutdown();
+    // gymapi->cleanupmemory();
 
-    // delete runner;
+    // delete gymapi;
 
     return 0;
 }

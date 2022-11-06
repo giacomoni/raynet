@@ -19,8 +19,8 @@
 #include <inet/common/INETDefs.h>
 #include <inet/transportlayer/tcp/flavours/TcpNewReno.h>
 
-#include "../../common/rl/MonitorInterval.h"
-#include "../PacedTcpConnection.h"
+#include "MonitorInterval.h"
+#include "PacedTcpConnection.h"
 #include "RLInterface.h"
 
 using namespace inet::tcp;
