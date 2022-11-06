@@ -39,6 +39,7 @@ protected:
   // is a struct containing info on the current stepping logic
   std::unordered_map<std::string, BrokerDetails> activeAgents;
 
+  virtual void finish();
   virtual void initialize();
   virtual void handleMessage(cMessage *msg);
   void receiveSignal(cComponent *source, simsignal_t signalID, cObject *value, cObject *obj);
@@ -49,7 +50,6 @@ protected:
 
 public:
 
-  ~Broker();
  
   // Get the observation
   ObsType getObservation(std::string id);

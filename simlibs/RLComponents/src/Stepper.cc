@@ -77,7 +77,7 @@ void Stepper::receiveSignal(cComponent *source, simsignal_t signalID, const char
 
         //Schedule first step
         scheduleAt(simTime() + details.stepSize, details.stepMsg);
-        EV_DEBUG << "Agent " << id << " will step in " <<  details.stepSize << " seconds at " << simTime() + details.stepSize << std::endl;
+        EV_TRACE << "Agent " << id << " will step in " <<  details.stepSize << " seconds at " << simTime() + details.stepSize << std::endl;
 
     }
     else if  (strcmp(signalName, "unregisterAgent") == 0){

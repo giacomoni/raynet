@@ -17,6 +17,7 @@
 
 #ifndef TRANSPORT_TCPRLRENO_H_
 #define TRANSPORT_TCPRLRENO_H_
+#ifdef RLTCP
 
 #include <algorithm>
 #include <cmath>
@@ -141,3 +142,4 @@ public:
 } // namespace learning
 
 #endif /* TRANSPORT_TCPRLRENO_H_ */
+#endif

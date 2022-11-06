@@ -10,10 +10,11 @@ cleanall: checkmakefiles
 	rm -f src/Makefile
 
 makefilesrelease:
-	cd src && opp_makemake -o TcpPaced --make-so -f --deep --mode release -D${RAYNET_FEATURE} -I${HOME}/inet4/src -L${HOME}/inet4/src -lINET
+	cd src && opp_makemake -o cartpole --make-so -f --deep --mode release -D${RAYNET_FEATURE} -I${RAYNET_HOME}/simlibs/RLComponents/src -L${RAYNET_HOME}/simlibs/RLComponents/src -lRLComponents 
 
 makefilesdebug:
-	cd src && opp_makemake -o TcpPaced --make-so -f --deep --mode debug -D${RAYNET_FEATURE} -I${HOME}/inet4/src -L${HOME}/inet4/src -lINET_dbg
+	cd src && opp_makemake -o cartpole --make-so -f --deep --mode debug -D${RAYNET_FEATURE}  -I${RAYNET_HOME}/simlibs/RLComponents/src -L${RAYNET_HOME}/simlibs/RLComponents/src  -lRLComponents_dbg 
+
 checkmakefiles:
 	@if [ ! -f src/Makefile ]; then \
 	echo; \

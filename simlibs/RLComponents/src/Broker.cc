@@ -21,7 +21,7 @@
 // The module class needs to be registered with OMNeT++
 Define_Module(Broker);
 
-Broker::~Broker(){
+void Broker::finish(){
      for (auto& it: activeAgents) {
         // Get agent id
         if (it.second.endOfStep->isScheduled()){
@@ -29,7 +29,6 @@ Broker::~Broker(){
         }
         delete it.second.endOfStep;
      }
-
 }
 
 /*
@@ -139,8 +138,11 @@ void Broker::receiveSignal(cComponent *source, simsignal_t signalID, cObject *va
 
         // Schedule an EOS message for the specific agent.
         scheduleAt(simTime(), activeAgents[id].endOfStep);
-    
-        EV_TRACE<<  simTime() <<" Scheduled end of step for " << id << "..." << std::endl;
+
+
+
+
+        EV_TRACE <<  simTime() <<" Scheduled end of step for " << id << "..." << std::endl;
 
         //Clean up
         delete obj;
@@ -162,24 +164,12 @@ void Broker::setActionAndMove(std::unordered_map<std::string, std::tuple<ActionT
     for (auto& it: actionsAndMoves) {
         data = new BrokerData();
 
-        if (std::get<1>(it.second))
-        {
-        if(std::get<0>(it.second) != std::get<0>(it.second)){
-                EV_DEBUG << "======================================================== ERROR: Broker reset ========================================================" << std::endl;
-                EV_DEBUG << std::get<0>(it.second) << std::endl;
-
-            }
+        if (std::get<1>(it.second)){
             data->setReset(std::get<1>(it.second));
-        }
+            }
 
         else //move is action step
         {
-            
-            if(std::get<0>(it.second) != std::get<0>(it.second)){
-                    EV_DEBUG << "======================================================== ERROR: Broker step ========================================================" << std::endl;
-                    EV_DEBUG << std::get<0>(it.second) << std::endl;
-
-                }
             data->setAction(std::get<0>(it.second));
             data->setReset(false);
         }

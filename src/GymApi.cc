@@ -57,14 +57,15 @@ void GymApi::initialise(std::string _iniPath){
     bool isReset = true;
 
     std::unordered_map<std::string, ObsType > resetObs;
-    string networkname("simplenetwork");
+    
 
     // run the simulation
 
-    std::string id = env->step(0, isReset, networkname);
+    std::string id = env->step(0, isReset);
+
 
     if(id != "nostep"){
-        cModule *mod = getSimulation()->getModuleByPath((networkname+string(".broker")).c_str());
+        cModule *mod = getSimulation()->getModuleByPath((getSimulation()->getSystemModule()->getFullPath()+string(".broker")).c_str());
         Broker *target = check_and_cast<Broker *>(mod);
 
 
@@ -114,11 +115,9 @@ std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::st
     std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > returnTuple;
     bool isReset = false;
 
-    string networkname("simplenetwork");
-    // We call step on the environment
-    std::string id = env->step(actions, isReset, networkname);
+    std::string id = env->step(actions, isReset);
 
-    cModule *mod = getSimulation()->getModuleByPath((networkname+string(".broker")).c_str());
+    cModule *mod = getSimulation()->getModuleByPath(( getSimulation()->getSystemModule()->getFullPath()+ string(".broker")).c_str());
     Broker *target = check_and_cast<Broker *>(mod);
 
     auto obss = target->getObservations();

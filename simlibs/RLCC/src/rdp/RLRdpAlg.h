@@ -1,5 +1,6 @@
 #ifndef TRANSPORTLAYER_RDP_FLAVOURS_RLRDP_H_
 #define TRANSPORTLAYER_RDP_FLAVOURS_RLRDP_H_
+#ifdef RLRDP
 
 #include <inet/common/INETDefs.h>
 #include "transportlayer/rdp/RdpAlgorithm.h"
@@ -116,4 +117,5 @@ class INET_API RLRdpAlg : public RdpAlgorithm, public RLInterface
 }
 }
 
+#endif
 #endif

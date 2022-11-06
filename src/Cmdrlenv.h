@@ -29,8 +29,8 @@ class Cmdrlenv : public Cmdenv
     // Set up the simulation
     void initialiseEnvironment(int argc, char *argv[],cConfiguration *configobject);
     // Execute events until the next step event
-    std::string step(ActionType action, bool isReset, std::string networkname);
-    std::string step(std::unordered_map<std::string, ActionType>  actions, bool isReset, std::string networkname);
+    std::string step(ActionType action, bool isReset);
+    std::string step(std::unordered_map<std::string, ActionType>  actions, bool isReset);
 
     // Shutdown the simulation
     void endSimulation();

@@ -15,6 +15,7 @@
 
 #ifndef TRANSPORTLAYER_RL_RLTCPNEWRENO_H_
 #define TRANSPORTLAYER_RL_RLTCPNEWRENO_H_
+#ifdef RLTCP
 
 #include <inet/common/INETDefs.h>
 #include <inet/transportlayer/tcp/flavours/TcpNewReno.h>
@@ -127,3 +128,5 @@ public:
 };
 }
 #endif /* TRANSPORTLAYER_RL_RLTCPNEWRENO_H_ */
+
+#endif

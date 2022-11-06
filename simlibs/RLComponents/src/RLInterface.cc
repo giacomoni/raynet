@@ -107,16 +107,23 @@ void RLInterface::receiveSignal(cComponent *source, simsignal_t id, cObject *val
     {
         cString * c_id = dynamic_cast< cString *>(details);
         std::string id = c_id->str;
+        std::string cartpolestr("cartpole");
+        std::string resetstr("RESET");
 
+         if (strcmp(stringId.c_str(), cartpolestr.c_str()) == 0 && strcmp(id.c_str(), resetstr.c_str()) == 0){
+            BrokerData *data = dynamic_cast< BrokerData *>(value);
+            isReset = true;
+            ActionType decision = data->getAction();
+
+            decisionMade(decision);
+        }
         // If this signal refers to this agent, then take the action.
         if (strcmp(stringId.c_str(), id.c_str()) == 0){
             BrokerData *data = dynamic_cast< BrokerData *>(value);
 
             if (!data->isReset()){
                 ActionType decision = data->getAction();
-                if(decision != decision){
 
-                }
                 decisionMade(decision);
                 // Reset the variables that keep track of step wise stats.
                 resetStepVariables();

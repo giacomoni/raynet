@@ -1,4 +1,5 @@
 
+#ifdef RLRDP
 #include "RLRdpAlg.h"
 #include <cmath>
 
@@ -423,3 +424,4 @@ bool RLRdpAlg::getDone(){
 
 } // namespace inet
 
+#endif

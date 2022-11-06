@@ -13,6 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#ifdef RLTCP
+
 #include "RLTcpNewReno.h"
 
 #define RTT_MULTIPLIER 1.7 // multiplier for the srtt when setting MI length
@@ -758,3 +760,4 @@ bool RLTcpNewReno::getDone()
 
 }    // namespace learning
 
+#endif

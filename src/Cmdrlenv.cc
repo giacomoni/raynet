@@ -138,7 +138,7 @@ std::vector<double> Cmdrlenv::getObservation(){
 }
 
 
-std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkname){
+std::string Cmdrlenv::step(ActionType action, bool isReset){
     sigintReceived = false;
     Speedometer speedometer;
 
@@ -148,13 +148,13 @@ std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkn
     * If it's step - also send the agent action in the signal. 
     */
 
-    std::string broker_name = networkname + std::string(".broker");
+    std::string broker_name = getSimulation()->getSystemModule()->getFullPath() + std::string(".broker");
 
     cModule *mod = getSimulation()->getModuleByPath(broker_name.c_str());
 
     Broker *target = check_and_cast<Broker *>(mod);
 
-    std::unordered_map<std::string, std::tuple<ActionType, bool>> actionAndMove({{"A1",std::tuple<ActionType,bool>{action, isReset}}});
+    std::unordered_map<std::string, std::tuple<ActionType, bool>> actionAndMove({{"RESET",std::tuple<ActionType,bool>{action, isReset}}});
 
     target->setActionAndMove(actionAndMove);
 
@@ -167,6 +167,7 @@ std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkn
             while (true) {
                 
                 cEvent *event = getSimulation()->takeNextEvent();
+
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
 
@@ -181,9 +182,10 @@ std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkn
                 * Exec
                 * Get the state of the cartpole env from Broker module
                 */
+               
                 string eventName = event -> getName();
                 getSimulation()->executeEvent(event);
-                // std::cout << eventName << std::endl;
+                
 
                 if (eventName.find(std::string("EOS")) != std::string::npos) {
                     std::string agentId = eventName.substr(eventName.find(std::string("-"))+1);
@@ -210,7 +212,7 @@ std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkn
 
            
             while (true) {
-                cEvent *event = getSimulation()->takeNextEvent();
+                cEvent *event = getSimulation()->takeNextEvent();                
               
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
@@ -226,7 +228,7 @@ std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkn
                 * Get the observations of the cartpole env from Broker module
                 */
                 string eventName = event -> getName();
-                // std::cout << eventName << std::endl;
+
                 // execute event
                 getSimulation()->executeEvent(event);
                 if (eventName.find(std::string("EOS")) != std::string::npos) {
@@ -266,7 +268,7 @@ std::string Cmdrlenv::step(ActionType action, bool isReset, std::string networkn
         doStatusUpdate(speedometer);
 }
 
-std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions, bool isReset, std::string networkname){
+std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions, bool isReset){
     sigintReceived = false;
     Speedometer speedometer;
 
@@ -276,7 +278,7 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
     * If it's step - also send the agent action in the signal. 
     */
 
-    std::string broker_name = networkname + std::string(".broker");
+    std::string broker_name = getSimulation()->getSystemModule()->getFullPath() + std::string(".broker");
 
     cModule *mod = getSimulation()->getModuleByPath(broker_name.c_str());
 
@@ -300,6 +302,7 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
             while (true) {
                 
                 cEvent *event = getSimulation()->takeNextEvent();
+
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
 
@@ -344,6 +347,8 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
            
             while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
+                // std::cout << eventName << std::endl;
+                // execute event
               
                 if (!event)
                     throw cTerminationException("Scheduler interrupted while waiting");
@@ -358,9 +363,8 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
                  /*
                 * Get the observations of the cartpole env from Broker module
                 */
+               
                 string eventName = event -> getName();
-                // std::cout << eventName << std::endl;
-                // execute event
                 getSimulation()->executeEvent(event);
                 if (eventName.find(std::string("EOS")) != std::string::npos) {
                     std::string agentId = eventName.substr(eventName.find(std::string("-"))+1);
