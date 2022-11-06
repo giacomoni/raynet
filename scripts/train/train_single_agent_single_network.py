@@ -111,18 +111,18 @@ register_env("OmnetppEnv", OmnetGymApienv_creator)
 
 if __name__ == "__main__":
     
-    alg = sys.argv[1]
+    alg = float(sys.argv[1])
     seed = int(sys.argv[2])
 
     config = {
         "env": "OmnetppEnv",
-        "env_config": {"iniPath": os.getenv('HOME') + "/RLlibIntegration/configs/ndpconfig_single_flow_train_with_delay.ini",
+        "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
                        "linkrate_range": [64,128],
                        "rtt_range": [16, 64],
                        "buffer_range": [80, 800],
                        "stacking": 10},
         "evaluation_config": {
-                                "env_config": {"iniPath": os.getenv('HOME') + "/RLlibIntegration/configs/ndpconfig_single_flow_train_with_delay.ini"},
+                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini"},
                                 "explore": False,
                                 "stacking": 10
 
