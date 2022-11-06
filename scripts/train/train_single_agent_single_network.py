@@ -1,4 +1,4 @@
-from build.omnetbind import SimulationRunner
+from build.omnetbind import OmnetGymApi 
 import gym
 from gym import spaces, logger
 import numpy as np
@@ -23,7 +23,7 @@ def uniform(low=0, high=1):
 def lognuniform(low=0, high=1, size=None, base=np.e):
     return np.power(base, np.random.uniform(low, high, size))
 
-class SimulationRunnerEnv(gym.Env):
+class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
         self.env_config = env_config
         self.stacking = env_config['stacking']
@@ -39,7 +39,7 @@ class SimulationRunnerEnv(gym.Env):
                                  10000000000],dtype=np.float32), self.stacking)
         self.currentRecord = None
         self.observation_space = spaces.Box(low=self.obs_min, high=self.obs_max, dtype=np.float32)
-        self.runner = SimulationRunner()
+        self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
     def reset(self):
@@ -103,10 +103,10 @@ class SimulationRunnerEnv(gym.Env):
         return  obs, reward, dones[self.agentId], {}
 
 
-def simulationrunnerenv_creator(env_config):
-    return SimulationRunnerEnv(env_config)  # return an env instance
+def OmnetGymApienv_creator(env_config):
+    return OmnetGymApiEnv(env_config)  # return an env instance
 
-register_env("OmnetppEnv", simulationrunnerenv_creator)
+register_env("OmnetppEnv", OmnetGymApienv_creator)
 
 
 if __name__ == "__main__":
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     
     # # Create the Trainer from config.
     # cls = get_trainable_cls("SAC")
-    # env = simulationrunnerenv_creator(config['env_config'])
+    # env = OmnetGymApienv_creator(config['env_config'])
     # agent = cls(env="OmnetppEnv", config=config)
 
     # checkpoint_path = f"/its/home/lg317/ray_results/explicitstate5/SAC_OmnetppEnv_4700e_00000_0_2022-07-05_16-51-05/checkpoint_009000"

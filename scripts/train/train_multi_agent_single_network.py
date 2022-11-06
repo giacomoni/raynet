@@ -100,13 +100,13 @@ register_env("OmnetppEnv", simulationrunnerenv_creator)
 if __name__ == "__main__":
     config = {
         "env": "OmnetppEnv",
-        "env_config": {"iniPath": os.getenv('HOME') + "/RLlibIntegration/configs/ndpconfig_single_flow_train_with_delay.ini",
+        "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
                        "linkrate_range": [96,96],
                        "rtt_range": [40, 40],
                        "buffer_range": [440, 440],
                        "stacking": 5},
         "evaluation_config": {
-                                "env_config": {"iniPath": os.getenv('HOME') + "/RLlibIntegration/configs/ndpconfig_single_flow_train_with_delay.ini"},
+                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini"},
                                 "explore": False,
                                 "stacking": 5
 

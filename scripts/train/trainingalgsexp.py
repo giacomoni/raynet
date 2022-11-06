@@ -20,6 +20,6 @@ if __name__ == '__main__':
         EXPS.append(element)
 
     # start 4 worker processes
-    with Pool(processes=2) as pool:
+    with Pool(processes=1) as pool:
         pool.map(run_training, EXPS)
         

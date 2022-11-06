@@ -29,7 +29,7 @@ PacedTcp::~PacedTcp()
 
 TcpConnection* PacedTcp::createConnection(int socketId)
 {
-    auto moduleType = cModuleType::get("mltcp.transportlayer.PacedTcpConnection");
+    auto moduleType = cModuleType::get("TcpPaced.PacedTcpConnection");
     char submoduleName[24];
     sprintf(submoduleName, "conn-%d", socketId);
     auto module = check_and_cast<TcpConnection*>(moduleType->createScheduleInit(submoduleName, this));
