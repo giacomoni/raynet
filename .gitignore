@@ -1,4 +1,4 @@
-
+*.ini.worker*
 simlibs/RLComponents/src/RLComponents
 simlibs/RLComponents/src/RLComponents_dbg
 simlibs/RLComponents/src/Makefile

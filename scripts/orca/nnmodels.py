@@ -55,10 +55,11 @@ class KerasBatchNormModel(TFModelV2):
     @override(ModelV2)
     def forward(self, input_dict, state, seq_lens):
         if isinstance(input_dict, SampleBatch):
+            
 
-            is_training = input_dict.is_training
+            is_training = input_dict._is_training
         else:
-            is_training = input_dict["_is_training"]
+            is_training = input_dict["is_training"]
         # Have to batch the is_training flag (B=1).
         out, self._value_out = self.base_model(
             [input_dict["obs"], tf.expand_dims(is_training, 0)]
@@ -68,7 +69,6 @@ class KerasBatchNormModel(TFModelV2):
     @override(ModelV2)
     def value_function(self):
         return tf.reshape(self._value_out, [-1])
-
 
 class BatchNormModel(TFModelV2):
     """Example of a TFModelV2 that is built w/o using tf.keras.

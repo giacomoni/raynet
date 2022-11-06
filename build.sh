@@ -13,8 +13,8 @@ echo {"Usage: ${0##*/} [-h] [-m BUILDMODE] [-f FEATURE]...
        -f FEATURE    chose the feature to build. Currently available:
                           RLRDP (default) Builds Raynet to support RDP Agents
                           RLTCP           Builds Raynet to spport TCP Agents
-                          CARTPOLE        Builds raynet for cartpole experimentation"
-  
+                          CARTPOLE        Builds raynet for cartpole experimentation
+                          ORCA            Builds raynet for ORCA experimentation"
 }
    
    # Initialize our own variables:
@@ -50,7 +50,7 @@ then
 	exit 1 
 	fi
 
-if [ "$feature" != "RLRDP" ] && [ "$feature" != "RLTCP" ] && [ "$feature" != "CARTPOLE" ]
+if [ "$feature" != "RLRDP" ] && [ "$feature" != "RLTCP" ] && [ "$feature" != "CARTPOLE" ] && [ "$feature" != "ORCA" ]
 then
 	echo "-f option value not recognised. Select among RLRDP, RLTCP, CARTPOLE "
 	echo "Build failed."	
