@@ -26,10 +26,11 @@ PacedTcpConnection::PacedTcpConnection()
 
 PacedTcpConnection::~PacedTcpConnection()
 {
+     if (paceMsg)
+        delete cancelEvent(paceMsg);
 
-    cancelEvent(paceMsg);
-    delete paceMsg;
 }
+
 
 bool PacedTcpConnection::processTimer(cMessage *msg)
 {
@@ -38,10 +39,11 @@ bool PacedTcpConnection::processTimer(cMessage *msg)
 
     // first do actions
     TcpEventCode event;
-
+    
     if (msg == paceMsg) {
         processPaceTimer();
     }
+
     else if (msg == the2MSLTimer) {
         event = TCP_E_TIMEOUT_2MSL;
         process_TIMEOUT_2MSL();
@@ -66,6 +68,8 @@ bool PacedTcpConnection::processTimer(cMessage *msg)
     // then state transitions
     return performStateTransition(event);
 }
+
+
 
 void PacedTcpConnection::initConnection(TcpOpenCommand *openCmd)
 {
@@ -111,40 +115,40 @@ void PacedTcpConnection::processPaceTimer()
 
 }
 
-void PacedTcpConnection::sendToIP(Packet *packet, const Ptr<TcpHeader> &tcpseg)
-{
+void PacedTcpConnection::sendToIP(Packet *tcpSegment, const Ptr<TcpHeader> &tcpHeader)
+{ 
+    
     // record seq (only if we do send data) and ackno
-    if (packet->getByteLength() > B(tcpseg->getChunkLength()).get())
-        emit(sndNxtSignal, tcpseg->getSequenceNo());
+    if (tcpSegment->getByteLength() > B(tcpHeader->getChunkLength()).get())
+        emit(sndNxtSignal, tcpHeader->getSequenceNo());
 
-    emit(sndAckSignal, tcpseg->getAckNo());
+    emit(sndAckSignal, tcpHeader->getAckNo());
 
     // final touches on the segment before sending
-    tcpseg->setSrcPort(localPort);
-    tcpseg->setDestPort(remotePort);
-    ASSERT(tcpseg->getHeaderLength() >= TCP_MIN_HEADER_LENGTH);
-    ASSERT(tcpseg->getHeaderLength() <= TCP_MAX_HEADER_LENGTH);
-    ASSERT(tcpseg->getChunkLength() == tcpseg->getHeaderLength());
-    state->sentBytes = packet->getByteLength();    // resetting sentBytes to 0 if sending a segment without data (e.g. ACK)
+    tcpHeader->setSrcPort(localPort);
+    tcpHeader->setDestPort(remotePort);
+    ASSERT(tcpHeader->getHeaderLength() >= TCP_MIN_HEADER_LENGTH);
+    ASSERT(tcpHeader->getHeaderLength() <= TCP_MAX_HEADER_LENGTH);
+    ASSERT(tcpHeader->getChunkLength() == tcpHeader->getHeaderLength());
 
     EV_INFO << "Sending: ";
-    printSegmentBrief(packet, tcpseg);
+    printSegmentBrief(tcpSegment, tcpHeader);
 
-    // TBD reuse next function for sending
+    // TODO reuse next function for sending
 
-    IL3AddressType *addressType = remoteAddr.getAddressType();
-    packet->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(addressType->getNetworkProtocol());
+    const IL3AddressType *addressType = remoteAddr.getAddressType();
+    tcpSegment->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(addressType->getNetworkProtocol());
 
-    if (ttl != -1 && packet->findTag<HopLimitReq>() == nullptr)
-        packet->addTag<HopLimitReq>()->setHopLimit(ttl);
+    if (ttl != -1 && tcpSegment->findTag<HopLimitReq>() == nullptr)
+        tcpSegment->addTag<HopLimitReq>()->setHopLimit(ttl);
 
-    if (dscp != -1 && packet->findTag<DscpReq>() == nullptr)
-        packet->addTag<DscpReq>()->setDifferentiatedServicesCodePoint(dscp);
+    if (dscp != -1 && tcpSegment->findTag<DscpReq>() == nullptr)
+        tcpSegment->addTag<DscpReq>()->setDifferentiatedServicesCodePoint(dscp);
 
-    if (tos != -1 && packet->findTag<TosReq>() == nullptr)
-        packet->addTag<TosReq>()->setTos(tos);
+    if (tos != -1 && tcpSegment->findTag<TosReq>() == nullptr)
+        tcpSegment->addTag<TosReq>()->setTos(tos);
 
-    auto addresses = packet->addTagIfAbsent<L3AddressReq>();
+    auto addresses = tcpSegment->addTagIfAbsent<L3AddressReq>();
     addresses->setSrcAddress(localAddr);
     addresses->setDestAddress(remoteAddr);
 
@@ -164,15 +168,16 @@ void PacedTcpConnection::sendToIP(Packet *packet, const Ptr<TcpHeader> &tcpseg)
     // rfc-3168, page 20:
     // ECN-capable TCP implementations MUST NOT set either ECT codepoint
     // (ECT(0) or ECT(1)) in the IP header for retransmitted data packets
-    packet->addTagIfAbsent<EcnReq>()->setExplicitCongestionNotification((state->ect && !state->sndAck && !state->rexmit) ? IP_ECN_ECT_1 : IP_ECN_NOT_ECT);
+    tcpSegment->addTagIfAbsent<EcnReq>()->setExplicitCongestionNotification((state->ect && !state->sndAck && !state->rexmit) ? IP_ECN_ECT_1 : IP_ECN_NOT_ECT);
 
-    tcpseg->setCrc(0);
-    tcpseg->setCrcMode(tcpMain->crcMode);
+    tcpHeader->setCrc(0);
+    tcpHeader->setCrcMode(tcpMain->crcMode);
 
-    insertTransportProtocolHeader(packet, Protocol::tcp, tcpseg);
+    insertTransportProtocolHeader(tcpSegment, Protocol::tcp, tcpHeader);
 
-    addPacket(packet);
+    addPacket(tcpSegment);
     bufferedPacketsVec.record(packetQueue.size());
+
 }
 
 void PacedTcpConnection::changeIntersendingTime(simtime_t _intersendingTime)

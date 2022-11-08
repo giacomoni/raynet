@@ -12,7 +12,6 @@ echo {"Usage: ${0##*/} [-h] [-m BUILDMODE] [-f FEATURE]...
        -m BUILDMODE  chose between release and debug modes. Defaults to release.
        -f FEATURE    chose the feature to build. Currently available:
                           RLRDP (default) Builds Raynet to support RDP Agents
-                          RLTCP           Builds Raynet to spport TCP Agents
                           CARTPOLE        Builds raynet for cartpole experimentation
                           ORCA            Builds raynet for ORCA experimentation"
 }
@@ -50,7 +49,7 @@ then
 	exit 1 
 	fi
 
-if [ "$feature" != "RLRDP" ] && [ "$feature" != "RLTCP" ] && [ "$feature" != "CARTPOLE" ] && [ "$feature" != "ORCA" ]
+if [ "$feature" != "RLRDP" ] && [ "$feature" != "CARTPOLE" ] && [ "$feature" != "ORCA" ]
 then
 	echo "-f option value not recognised. Select among RLRDP, RLTCP, CARTPOLE "
 	echo "Build failed."	
@@ -61,7 +60,7 @@ export RAYNET_FEATURE=$feature
 
 if [ "$mode" = "debug" ]
 then
-	cd $HOME/inet4
+	cd $HOME/inet4.4
 	make -j32 MODE=debug
 
 
@@ -75,6 +74,8 @@ then
 	cd $RAYNET_HOME/simlibs/rdp && \
 	make makefilesdebug && \
 	make -j32 MODE=debug
+
+	exit 1
 
 	# Build RLComponents debug
 	cd $RAYNET_HOME/simlibs/RLComponents && \
@@ -100,7 +101,7 @@ fi
 
 if [ "$mode" = "release" ]
 then
-	cd $HOME/inet4
+	cd $HOME/inet4.4
 	make -j32 MODE=release
 
 	echo "Building release libraries..." && \

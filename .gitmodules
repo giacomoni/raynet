@@ -12,4 +12,4 @@
 [submodule "simlibs/ecmp"]
 	path = simlibs/ecmp
 	url = git@github.com:giacomoni/ecmp.git
-	branch = master
+	branch = omnetpp6

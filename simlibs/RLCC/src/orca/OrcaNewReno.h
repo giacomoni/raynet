@@ -29,9 +29,9 @@ protected:
     //-------------------------------------------------------- LEGACY CODE ----------------------------------------------------------------------------------------------------------------------------------------------------
 
     // ssequence number ending with at a MI
-    uint32 bytesAcked; //used for throughput
+    uint32_t bytesAcked; //used for throughput
 
-    uint32 previousUnacked; //used for throughput
+    uint32_t previousUnacked; //used for throughput
 
     simtime_t previousUnackedTime; //used for throughput
 
@@ -121,7 +121,7 @@ public:
 
     virtual bool sendData(bool sendCommandInvoked) override;
 
-    virtual void receivedDataAck(uint32 firstSeqAcked) override;
+    virtual void receivedDataAck(uint32_t firstSeqAcked) override;
     virtual void receivedDuplicateAck() override;
 
     //virtual void processTimer(cMessage *timer, TcpEventCode &event) override;

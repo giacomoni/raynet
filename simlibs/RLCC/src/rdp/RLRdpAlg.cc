@@ -71,7 +71,7 @@ void RLRdpAlg::processTimer(cMessage *timer, RdpEventCode &event)
 
 }
 
-void RLRdpAlg::dataSent(uint32 fromseq)
+void RLRdpAlg::dataSent(uint32_t fromseq)
 {
 
 }

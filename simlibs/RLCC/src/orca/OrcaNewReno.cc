@@ -112,7 +112,7 @@ bool OrcaNewReno::sendData(bool sendCommandInvoked) {
     //cout << "_in sendData!" <<endl;
     //cout << "state_scwnd: " << state->snd_cwnd <<endl;
     bool b;
-    uint32 oldSndMax, newSndMax;
+    uint32_t oldSndMax, newSndMax;
 
     oldSndMax = state->snd_max;
     b = TcpBaseAlg::sendData(sendCommandInvoked);
@@ -147,7 +147,7 @@ void OrcaNewReno::processRexmitTimer(TcpEventCode &event)
     }
 }
 
-void OrcaNewReno::receivedDataAck(uint32 firstSeqAcked)
+void OrcaNewReno::receivedDataAck(uint32_t firstSeqAcked)
 {
   //cout << "in recieved ack" << endl;
 
@@ -185,7 +185,7 @@ void OrcaNewReno::receivedDataAck(uint32 firstSeqAcked)
             // Exit Fast Recovery: deflating cwnd
             //
             // option (1): set cwnd to min (ssthresh, FlightSize + SMSS)
-            uint32 flight_size = state->snd_max - state->snd_una;
+            uint32_t flight_size = state->snd_max - state->snd_una;
             state->snd_cwnd = std::min(state->ssthresh, flight_size + state->snd_mss);
             EV_INFO << "Fast Recovery - Full ACK received: Exit Fast Recovery, setting cwnd to " << state->snd_cwnd << "\n";
             // option (2): set cwnd to ssthresh
@@ -310,7 +310,7 @@ void OrcaNewReno::receivedDataAck(uint32 firstSeqAcked)
                 rlInitialised = true;
             }
             // perform Congestion Avoidance (RFC 2581)
-            uint32 incr = state->snd_mss * state->snd_mss / state->snd_cwnd;
+            uint32_t incr = state->snd_mss * state->snd_mss / state->snd_cwnd;
 
             if (incr == 0)
                 incr = 1;
@@ -375,7 +375,7 @@ void OrcaNewReno::receivedDuplicateAck()
 
     TcpTahoeRenoFamily::receivedDuplicateAck();
 
-    if (state->dupacks == DUPTHRESH)
+    if (state->dupacks == state->dupthresh)
     { // DUPTHRESH = 3
         if (!state->lossRecovery)
         {
@@ -447,7 +447,7 @@ void OrcaNewReno::receivedDuplicateAck()
         }
         EV_INFO << "NewReno on dupAcks == DUPTHRESH(=3): TCP is already in Fast Recovery procedure\n";
     }
-    else if (state->dupacks > DUPTHRESH)
+    else if (state->dupacks > state->dupthresh)
     { // DUPTHRESH = 3
         if (state->lossRecovery)
         {

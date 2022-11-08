@@ -34,13 +34,13 @@ class MonitorInterval
 {
 public:
     // MI sequence number
-    uint32 miNumber;
+    uint32_t miNumber;
 
     // state->snd_nxt value at the beginning of the MI
-    uint32 firstSndMax;
+    uint32_t firstSndMax;
 
     // state->snd_nxt (or state->snd_max) at the end of MI
-    uint32 lastSndMax;
+    uint32_t lastSndMax;
 
     // whether we already saved the timestamp of the first segment sent in this monitor interval
     bool isFirstSegmentSent;
@@ -70,7 +70,7 @@ public:
     //Avg rtt of the time interval
     double avgRtt;
 
-    MonitorInterval(uint32 _miNumber, uint32 _firstSeqSent, simtime_t _miStart, bool _isFirstPacketSent, bool _deferredTicking, double _action);
+    MonitorInterval(uint32_t _miNumber, uint32_t _firstSeqSent, simtime_t _miStart, bool _isFirstPacketSent, bool _deferredTicking, double _action);
     ~MonitorInterval();
 };
 
@@ -80,7 +80,7 @@ public:
     // pointer to the current MI
     shared_ptr<MonitorInterval> currentMi;
 
-    uint32 counter;
+    uint32_t counter;
 
     // passed MIs that are waiting for a throughput calculation
     std::deque<shared_ptr<MonitorInterval>> incompleteMis;

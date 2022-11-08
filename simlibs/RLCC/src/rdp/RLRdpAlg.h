@@ -49,6 +49,7 @@ class INET_API RLRdpAlgStateVariables : public RdpStateVariables
 
     //Slow Start
     bool slowStart;
+    uint32_t packetsInFlight;
 
 
 
@@ -90,7 +91,7 @@ class INET_API RLRdpAlg : public RdpAlgorithm, public RLInterface
 
     virtual void processTimer(cMessage *timer, RdpEventCode& event) override;
 
-    virtual void dataSent(uint32 fromseq) override;
+    virtual void dataSent(uint32_t fromseq) override;
 
     virtual void ackSent() override;
 

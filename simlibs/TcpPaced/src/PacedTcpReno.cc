@@ -66,11 +66,11 @@ void PacedTcpReno::processRexmitTimer(TcpEventCode &event)
     conn->retransmitOneSegment(true);
 }
 
-void PacedTcpReno::receivedDataAck(uint32 firstSeqAcked)
+void PacedTcpReno::receivedDataAck(uint32_t firstSeqAcked)
 {
     TcpTahoeRenoFamily::receivedDataAck(firstSeqAcked);
 
-    if (state->dupacks >= DUPTHRESH) {    // DUPTHRESH = 3
+    if (state->dupacks >= state->dupthresh) {    // DUPTHRESH = 3
         //
         // Perform Fast Recovery: set cwnd to ssthresh (deflating the window).
         //
@@ -108,7 +108,7 @@ void PacedTcpReno::receivedDataAck(uint32 firstSeqAcked)
             // within the last round trip time.
             if (simTime() - state->eceReactionTime > state->srtt) {
                 state->ssthresh = state->snd_cwnd / 2;
-                state->snd_cwnd = std::max(state->snd_cwnd / 2, uint32(1));
+                state->snd_cwnd = std::max(state->snd_cwnd / 2, uint32_t(1));
 
                 // Update sending pace
                 auto pacedConn = check_and_cast<PacedTcpConnection*>(this->conn);
@@ -156,7 +156,7 @@ void PacedTcpReno::receivedDataAck(uint32 firstSeqAcked)
             }
             else {
                 // perform Congestion Avoidance (RFC 2581)
-                uint32 incr = state->snd_mss * state->snd_mss / state->snd_cwnd;
+                uint32_t incr = state->snd_mss * state->snd_mss / state->snd_cwnd;
 
                 if (incr == 0)
                     incr = 1;
@@ -234,7 +234,7 @@ void PacedTcpReno::receivedDuplicateAck()
 {
     TcpTahoeRenoFamily::receivedDuplicateAck();
 
-    if (state->dupacks == DUPTHRESH) {    // DUPTHRESH = 3
+    if (state->dupacks == state->dupthresh) {    // DUPTHRESH = 3
         EV_INFO << "Reno on dupAcks == DUPTHRESH(=3): perform Fast Retransmit, and enter Fast Recovery:";
 
         if (state->sack_enabled) {
@@ -327,7 +327,7 @@ void PacedTcpReno::receivedDuplicateAck()
         // try to transmit new segments (RFC 2581)
         sendData(false);
     }
-    else if (state->dupacks > DUPTHRESH) {    // DUPTHRESH = 3
+    else if (state->dupacks > state->dupthresh) {    // DUPTHRESH = 3
         //
         // Reno: For each additional duplicate ACK received, increment cwnd by SMSS.
         // This artificially inflates the congestion window in order to reflect the

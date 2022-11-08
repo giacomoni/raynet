@@ -11,11 +11,13 @@
 #include <Broker.h>
 #include <unordered_map>
 #include <tuple>
+#include <omnetpp/clog.h>
 
 using namespace omnetpp;
 using namespace omnetpp::cmdenv;
 using namespace omnetpp::envir;
 using namespace omnetpp::common;
+using namespace omnetpp::internal;
 using namespace std;
 
 
