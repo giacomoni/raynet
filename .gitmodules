@@ -5,3 +5,11 @@
 	path = extern/pybind11
 	url = ../../pybind/pybind11
 	branch = stable
+[submodule "simlibs/ecmp"]
+	path = simlibs/ecmp
+	url = git@github.com:giacomoni/ecmp.git
+	branch = omnetpp6
+[submodule "simlibs/rdp"]
+	path = simlibs/rdp
+	url = git@github.com:giacomoni/rdp.git
+	branch = delayexpomnetpp6
