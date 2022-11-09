@@ -75,8 +75,6 @@ then
 	make makefilesdebug && \
 	make -j32 MODE=debug
 
-	exit 1
-
 	# Build RLComponents debug
 	cd $RAYNET_HOME/simlibs/RLComponents && \
 	make makefilesdebug && \

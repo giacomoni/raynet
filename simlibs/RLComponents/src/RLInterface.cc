@@ -60,6 +60,7 @@ void RLInterface::setStringId(std::string _id)
 
 void RLInterface::initialize(int stateSize, int maxObsSize)
 {
+    std::cerr << "Registering Interface" << std::endl;
     senderToStepper = owner -> registerSignal("senderToStepper"); 
     registerSig = owner->registerSignal("registerAgent");
     unregisterSig  = owner->registerSignal("unregisterAgent");

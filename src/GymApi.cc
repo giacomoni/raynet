@@ -64,6 +64,7 @@ void GymApi::initialise(std::string _iniPath){
     std::string id = env->step(0, isReset);
 
 
+
     if(id != "nostep"){
         cModule *mod = getSimulation()->getModuleByPath((getSimulation()->getSystemModule()->getFullPath()+string(".broker")).c_str());
         Broker *target = check_and_cast<Broker *>(mod);

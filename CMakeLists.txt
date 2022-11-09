@@ -27,18 +27,16 @@ find_package(OmnetPP 6.0.1 REQUIRED)
 include(OmnetppHelpers)
 
 add_compile_options(-fpermissive -fno-omit-frame-pointer -fPIC -MMD -MP -MF )
-add_compile_definitions($ENV{RAYNET_FEATURE})
+add_compile_definitions($ENV{RAYNET_FEATURE} HAVE_SWAPCONTEXT  WITH_NETBUILDER)
 include_directories(/usr/include/python3.8 ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/extern/pybind11/include ${OMNETPP_INCLUDE_DIR} ${OMNETPP_ROOT}/include ${OMNETPP_ROOT}/src ${TCPPACED_PATH}  ${RLCOMPONENTS_PATH} ${RLCC_PATH} ${RDP_PATH} ${CARTPOLE_PATH})
 link_directories(${OMNETPP_ROOT}/lib ${INET_MODEL_PATH}  ${ECMP_PATH} ${RDP_PATH} ${TCPPACED_PATH} ${RLCOMPONENTS_PATH} ${RLCC_PATH} ${RDP_PATH}  ${CARTPOLE_PATH})
 
-add_subdirectory(pybind11)
-
-add_compile_definitions(WITH_PARSIM HAVE_SWAPCONTEXT XMLPARSER=libxml WITH_NETBUILDER)
 
 add_library(rlomnet SHARED ${PROJECT_SOURCE_DIR}/src/GymApi.cc)
 add_library(Cmdrlenv SHARED ${PROJECT_SOURCE_DIR}/src/Cmdrlenv.cc)
 
 if(CMAKE_BUILD_TYPE STREQUAL Release)
+    add_subdirectory(pybind11)
 
 
     pybind11_add_module(omnetbind MODULE ${PROJECT_SOURCE_DIR}/src/GymApiBind.cc)

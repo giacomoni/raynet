@@ -16,7 +16,7 @@ inline bool elapsed(long millis, int64_t& since)
 void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *configobject){
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwsm");  // TODO share spec with startup.cc!
+    args->parse(argc, argv, ARGSPEC);  // TODO share spec with startup.cc!
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
@@ -84,7 +84,7 @@ void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *con
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
                 ASSERT(network);
 
-                bool endRunRequired = false;
+                endRunRequired = true;
 
                 // set up network
                 if (opt->verbose)
@@ -195,8 +195,7 @@ std::string Cmdrlenv::step(ActionType action, bool isReset){
                 */
                
                 string eventName = event -> getName();
-                getSimulation()->executeEvent(event);
-                
+                getSimulation()->executeEvent(event);                
 
                 if (eventName.find(std::string("EOS")) != std::string::npos) {
                     std::string agentId = eventName.substr(eventName.find(std::string("-"))+1);

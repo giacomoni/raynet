@@ -8,7 +8,7 @@
 [submodule "simlibs/rdp"]
 	path = simlibs/rdp
 	url = git@github.com:giacomoni/rdp.git
-	branch = delayexpomnetpp6
+	branch = omnetpp6
 [submodule "simlibs/ecmp"]
 	path = simlibs/ecmp
 	url = git@github.com:giacomoni/ecmp.git

@@ -6,6 +6,7 @@
 #include "transportlayer/rdp/RdpAlgorithm.h"
 #include "RLInterface.h"
 #include "transportlayer/rdp/Rdp.h"
+#include "RLRdpAlgStateVariables_m.h"
 
 using namespace learning;
 
@@ -13,49 +14,6 @@ using namespace learning;
 namespace inet {
 
 namespace rdp {
-
-class INET_API RLRdpAlgStateVariables : public RdpStateVariables
-{
-  public:
-   // ---- Track if RLInterface has been initialised
-    bool rlInitialised;
-
-    // ----- Per Step Variables 
-    simtime_t previousStepTimestamp;
-    uint32_t numberOfDataPacketsStep;
-    uint32_t numberOfTrimmedPacketsStep;
-    uint32_t numberOfRecoveredDataPacketsStep;
-    uint32_t numberOfTrimmedBytesStep;
-    double goodputStep; //Updated everytime we receive a new data packet.
-
-    // ----- Per flow variable
-    double goodput;
-    double estLinkRate;
-
-    // Sorted STL to keep track of nacked packets. When a packet is nacked, it is inserted in the list.
-    // Every time a packet is received, we check if it is a retransmission packet or not.
-    // Useful in the case we want to compute RTT only on data that is not retransmitted
-    std::set<unsigned int> currentlyNackedPackets;
-
-    //Weights for the reward funtion
-    double thrWeight;
-    double trimWeight;
-    double delayWeight;
-
-    int consecutiveBadSteps;
-
-    double timeCwndChanged;
-    int cwndReport;
-
-    //Slow Start
-    bool slowStart;
-    uint32_t packetsInFlight;
-
-
-
-  public:
-    RLRdpAlgStateVariables();
-};
 
 /**
  * A very-very basic RdpAlgorithm implementation, with hardcoded
@@ -97,7 +55,7 @@ class INET_API RLRdpAlg : public RdpAlgorithm, public RLInterface
 
     virtual void receivedHeader(unsigned int seqNum) override;
 
-    virtual void receivedData(unsigned int seqNum) override;
+    virtual void receivedData(unsigned int seqNum, bool isMarked) override;
 
     // -------------------- RL Functions -----------------------------
     // Initialise and activate the RL functionality. To be called
