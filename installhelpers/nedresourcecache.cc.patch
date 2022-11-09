@@ -1,0 +1,20 @@
+--- src/nedxml/nedresourcecache.cc	2022-08-31 14:53:16.000000000 +0100
++++ src/nedxml/updatednedresourcecache.cc	2022-11-09 19:01:57.225909797 +0000
+@@ -291,8 +291,7 @@
+ 
+ void NedResourceCache::doneLoadingNedFiles()
+ {
+-    if (doneLoadingNedFilesCalled)
+-        throw NedException("NedResourceCache::doneLoadingNedFiles() may only be called once");
++    if (!doneLoadingNedFilesCalled){
+     doneLoadingNedFilesCalled = true;
+ 
+     // collect package.ned files
+@@ -322,6 +321,7 @@
+ 
+     // register NED types from all the files we've loaded
+     registerPendingNedTypes();
++    }
+ }
+ 
+ void NedResourceCache::registerPendingNedTypes()

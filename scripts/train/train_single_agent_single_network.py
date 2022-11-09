@@ -28,10 +28,10 @@ class OmnetGymApiEnv(gym.Env):
         self.env_config = env_config
         self.stacking = env_config['stacking']
         self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
-        self.obs_min = np.tile(np.array([-1000,  
-                                 0,   
-                                 0,   
-                                 0], dtype=np.float32), self.stacking)
+        self.obs_min = np.tile(np.array([-1000000000,  
+                                 -1000000000,   
+                                 -1000000000,   
+                                 -1000000000], dtype=np.float32), self.stacking)
 
         self.obs_max = np.tile(np.array([10000000000, 
                                  10000000000, 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
                                 "stacking": 10
 
         },
-     "num_workers": 15,
+     "num_workers": 5,
      "horizon": 400,
      "no_done_at_end":True,
      "soft_horizon":False,

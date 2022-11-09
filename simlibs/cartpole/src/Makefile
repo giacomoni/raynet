@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for $(LIB_PREFIX)cartpole
 #
 # This file was generated with the command:
-#  opp_makemake -o cartpole --make-so -f --deep --mode debug -DRLRDP -I/home/luca/raynet/simlibs/RLComponents/src -L/home/luca/raynet/simlibs/RLComponents/src -lRLComponents_dbg
+#  opp_makemake -o cartpole --make-so -f --deep --mode release -DRLRDP -I/home/luca/raynet/simlibs/RLComponents/src -L/home/luca/raynet/simlibs/RLComponents/src -lRLComponents
 #
 
 # Name of target to be created (-o option)
@@ -20,7 +20,7 @@ INCLUDE_PATH = -I/home/luca/raynet/simlibs/RLComponents/src
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = $(LDFLAG_LIBPATH)/home/luca/raynet/simlibs/RLComponents/src  -lRLComponents_dbg
+LIBS = $(LDFLAG_LIBPATH)/home/luca/raynet/simlibs/RLComponents/src  -lRLComponents
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
@@ -38,7 +38,7 @@ SMFILES =
 
 # Default mode (-M option); can be overridden with make MODE=debug (or =release)
 ifndef MODE
-MODE = debug
+MODE = release
 endif
 
 #------------------------------------------------------------------------------

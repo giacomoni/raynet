@@ -132,7 +132,6 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
             initRLAgent();
             // Send the initial step size along
             cObject* simtime = new cSimTime(2*state->rttPropEstimator.getMin());
-            std::cerr << "line 163" << std::endl;
             conn->emit(this->registerSig, stringId.c_str(), simtime);
             state->slowStart = false;
             state->cwnd = round(state->cwnd/2);
@@ -150,13 +149,6 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
 void RLRdpAlg::receivedData(unsigned int seqNum, bool isMarked)
 {
 
-    std::cerr << "Q length: " << conn->getPullsQueueLength() << std::endl;
-    std::cerr << "Cwnd: " << state->cwnd << std::endl;
-    std::cerr << "RTT mean: " << state->rttPropEstimator.getMean() << std::endl;
-    std::cerr << "Pacing (s): " << state->pacingTime << std::endl;
-    std::cerr << "Pacing (bps): " << (1500*8)/state->pacingTime << std::endl;
-    std::cerr << "Throughput mean: " << state->bandwidthEstimator.getMean() << std::endl << std::endl;
-    
     // ----- On RECEIVER: received data packet
     conn->sendAckRdp(seqNum);
     state->numberReceivedPackets++;
@@ -383,7 +375,6 @@ void RLRdpAlg::decisionMade(ActionType action){
     // Reschedule next step according to new sRTT
      if (stepSize > SIMTIME_ZERO){
         cString* c_name = new cString(stringId);
-        std::cerr << "line 409" << std::endl;
 
         conn->emit(modifyStepSizeSig, 2*stepSize.dbl(), c_name);
     }

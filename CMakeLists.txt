@@ -45,9 +45,9 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
     target_link_libraries(omnetbind PRIVATE ${MY_LIB_LINK_LIBRARIES_RELEASE})
     target_link_libraries(rlomnet PRIVATE ${MY_LIB_LINK_LIBRARIES_RELEASE})
     target_link_libraries(omnetbind PRIVATE rlomnet)
-    # add_executable(testcpp ${PROJECT_SOURCE_DIR}/src/gymApiTest.cc)
-    # set_target_properties(testcpp PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-    # target_link_libraries(testcpp rlomnet oppsim)
+
+    add_executable(testcpp ${PROJECT_SOURCE_DIR}/src/gymApiTest.cc)
+    target_link_libraries(testcpp rlomnet oppsim)
 
 
 elseif(CMAKE_BUILD_TYPE STREQUAL Debug)
