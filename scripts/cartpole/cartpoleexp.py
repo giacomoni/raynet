@@ -88,7 +88,7 @@ if __name__ == '__main__':
     random.seed(seed)
     np.random.seed(seed)
 
-    ray.init()
+    ray.init(num_cpus=256)
 
     config = {"env": env,
             "num_workers" : num_workers,
@@ -98,13 +98,15 @@ if __name__ == '__main__':
                                 "explore": False
 
         },
+        "horizon": 500,
             "seed":seed}
 
     ray.tune.run(
         DQNTrainer,  
         name=f"{env}_{num_workers}_{seed}",
         config=config, 
-        stop={"timesteps_total": 500000}, 
+        stop={"episode_reward_mean": 500.0},
+        time_budget_s=2000, 
         checkpoint_at_end= True)
     
 
