@@ -5,7 +5,6 @@ from gym import spaces, logger
 import numpy as np
 import math
 from ray.tune.registry import register_env
-from ray.rllib.algorithms.dqn import DQN
 import ray
 from ray import tune
 import random
@@ -102,7 +101,7 @@ if __name__ == '__main__':
             "seed":seed}
 
     ray.tune.run(
-        DQNTrainer,  
+        "DQN",  
         name=f"{env}_{num_workers}_{seed}",
         config=config, 
         stop={"episode_reward_mean": 500.0},
