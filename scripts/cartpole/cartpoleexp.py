@@ -5,7 +5,7 @@ from gym import spaces, logger
 import numpy as np
 import math
 from ray.tune.registry import register_env
-from ray.rllib.agents.dqn import DQNTrainer
+from ray.rllib.algorithms.dqn import DQNTrainer
 import ray
 from ray import tune
 import random
