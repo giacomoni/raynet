@@ -8,17 +8,6 @@ cplusplus {{
 
 namespace inet::rdp;
 
-cplusplus {{
-
-typedef std::set<unsigned int> AckStore;
-}}
-
-class AckStore
-{
-   @existingClass;
-   //FIXME tostring, ...
-}
-
 struct RLRdpAlgStateVariables extends RdpStateVariables
 {
 
