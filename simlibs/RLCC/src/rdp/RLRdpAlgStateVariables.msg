@@ -1,12 +1,6 @@
 import transportlayer.rdp.RdpConnectionState;
 
 cplusplus {{
-
-
-#ifdef RLRDP
-}}
-
-cplusplus {{
 typedef std::set<unsigned int> AckStore;
 }}
 
@@ -14,7 +8,7 @@ class AckStore
 {
    @existingClass;
    //FIXME tostring, ...
-}
+};
 
 namespace inet::rdp;
 
@@ -64,9 +58,4 @@ cplusplus(RLRdpAlgStateVariables) {{
     virtual ~RLRdpAlgStateVariables();
     virtual std::string str() const override;
     virtual std::string detailedInfo() const;
-}}
-
-cplusplus {{
-
-#endif
 }}
