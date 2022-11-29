@@ -6,6 +6,16 @@ cplusplus {{
 #ifdef RLRDP
 }}
 
+cplusplus {{
+typedef std::set<unsigned int> AckStore;
+}}
+
+class AckStore
+{
+   @existingClass;
+   //FIXME tostring, ...
+}
+
 namespace inet::rdp;
 
 struct RLRdpAlgStateVariables extends RdpStateVariables
