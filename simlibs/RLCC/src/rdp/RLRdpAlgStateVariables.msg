@@ -53,10 +53,4 @@ struct RLRdpAlgStateVariables extends RdpStateVariables
 
 
 
-cplusplus(RLRdpAlgStateVariables) {{
-  public:
-    virtual ~RLRdpAlgStateVariables();
-    virtual std::string str() const override;
-    virtual std::string detailedInfo() const;
-}}
 

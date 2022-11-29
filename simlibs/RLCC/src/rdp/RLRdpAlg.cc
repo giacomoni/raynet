@@ -9,22 +9,6 @@ namespace rdp {
 
 Register_Class(RLRdpAlg);
 
-RLRdpAlgStateVariables::~RdpStateVariables()
-{
-}
-
-std::string RLRdpAlgStateVariables::str() const
-{
-    std::stringstream out;
-    return out.str();
-}
-
-std::string RLRdpAlgStateVariables::detailedInfo() const
-{
-    std::stringstream out;
-    out << "active=" << active << "\n";
-    return out.str();
-}
 
 simsignal_t RLRdpAlg::cwndSignal = cComponent::registerSignal("cwnd");    // will record changes to snd_cwnd
 simsignal_t RLRdpAlg::ssthreshSignal = cComponent::registerSignal("ssthresh");    // will record changes to ssthresh
