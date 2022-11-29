@@ -4,7 +4,7 @@ import os
 if __name__ == "__main__":
     
     SEEDS =  [1,10,100]
-    ENVS = ["OmnetGymApiEnv"]
+    ENVS = ["OmnetGymApiEnv", "CartPole-v1"]
     WORKERS = [2,4,8,16,32,64,128,255]
     
     

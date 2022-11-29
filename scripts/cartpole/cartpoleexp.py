@@ -65,10 +65,6 @@ class OmnetGymApiEnv(gym.Env):
              self.runner.cleanup()
        
         obs = np.asarray(list(obs),dtype=np.float32)
-
-
-
- 
     
         return  obs, reward, dones['cartpole'], {}
 
