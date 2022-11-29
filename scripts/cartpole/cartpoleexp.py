@@ -39,10 +39,10 @@ class OmnetGymApiEnv(gym.Env):
         
         ini_string = ini_string.replace("HOME",  os.getenv('HOME'))
 
-        with open(original_ini_file, 'w') as fout:
+        with open(original_ini_file + f".worker{os.getpid()}", 'w') as fout:
             fout.write(ini_string)
 
-        self.runner.initialise(original_ini_file)
+        self.runner.initialise(original_ini_file + f".worker{os.getpid()}")
         obs = self.runner.reset()
 
         obs = np.asarray(list(obs['cartpole']),dtype=np.float32)
