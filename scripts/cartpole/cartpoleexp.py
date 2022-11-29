@@ -83,7 +83,7 @@ if __name__ == '__main__':
     random.seed(seed)
     np.random.seed(seed)
 
-    ray.init(num_cpus=64)
+    ray.init(num_cpus=256)
 
     config = {"env": env,
             "num_workers" : num_workers,
