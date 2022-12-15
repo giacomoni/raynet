@@ -5,7 +5,7 @@ from gym import spaces, logger
 import numpy as np
 import math
 from ray.tune.registry import register_env
-from ray.rllib.agents.ddpg.td3 import TD3Trainer
+from ray.rllib.algorithms.ddpg.td3 import TD3Trainer
 import ray
 import pandas as pd
 from ray.rllib.models import ModelCatalog
