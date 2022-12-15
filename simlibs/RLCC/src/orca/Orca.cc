@@ -263,6 +263,9 @@ ObsType Orca::computeObservation()
     else
     {  
         std::cout << "obs is NOT valid" << std::endl;
+        std::out << state->orca_cnt << std::endl;
+         std::out << state->lossRecovery << std::endl;
+
         isValid = false;
         return {
             0,
