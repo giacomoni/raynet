@@ -5,13 +5,12 @@ from gym import spaces, logger
 import numpy as np
 import math
 from ray.tune.registry import register_env
-from ray.rllib.agents.ddpg.td3 import TD3Trainer
 import ray
 import pandas as pd
 from ray.rllib.models import ModelCatalog
 import os
 from collections import deque
-
+import nnmodels
 
 # ModelCatalog.register_custom_model("bn_model",KerasBatchNormModel)
 
@@ -43,7 +42,9 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
+        self.step_counter = 1
     def reset(self):
+        self.step_counter=1
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -80,6 +81,8 @@ class OmnetGymApiEnv(gym.Env):
         return obs
 
     def step(self, action):
+        print(self.step_counter)
+        self.counter += 1
         action = 2**action
 
         actions = {self.agentId: action}
@@ -120,20 +123,25 @@ config = {"env": "OmnetppEnv",
           "linkrate_range": [64,64],
           "rtt_range": [16, 16],
           "buffer_range": [250, 250],},
-
-          "num_workers": 2,
+"model": {
+        "custom_model": "bn_model",
+        # Extra kwargs to be passed to your model's c'tor.
+        "custom_model_config": {},
+    },
+         "framework": "tf",
+          "num_workers": 16,
           "horizon": 2000,
           "no_done_at_end": True,
           "soft_horizon": False,
-        #   "optimizer" : "Adam",
-        #   "lr":0.001,
-        #   "critic_lr": 0.001,
-        #   "actor_lr": 0.0001,
-        #    "exploration_config": {
-        #      "type": "GaussianNoise",
-        #      "stddev": 0.2
-        #     },
-        #   "train_batch_size":8096,
+           "optimizer" : "Adam",
+           "lr":0.001,
+           "critic_lr": 0.001,
+           "actor_lr": 0.0001,
+            "exploration_config": {
+              "type": "GaussianNoise",
+              "stddev": 0.2
+             },
+           "train_batch_size":8096,
           "gamma": 0.995,
           "framework": 'tf',
           }

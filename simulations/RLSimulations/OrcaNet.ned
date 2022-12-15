@@ -19,7 +19,7 @@ import RLComponents.Stepper;
 
 
 
-network Dumbell
+network OrcaNet
 {
     parameters:
         int n;

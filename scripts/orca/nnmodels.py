@@ -154,6 +154,6 @@ class BatchNormModel(TFModelV2):
         return tf.reshape(self._value_out, [-1])
 
 
-ModelCatalog.register_custom_model("bn_model", BatchNormModel)
+ModelCatalog.register_custom_model("bn_model", KerasBatchNormModel)
 
 
