@@ -22,7 +22,7 @@ Stepper::~Stepper(){
             cancelEvent(it.second.stepMsg);
             take(it.second.stepMsg);
         }
-        delete it.second.stepMsg;
+            delete it.second.stepMsg;
      }
 }
 
@@ -42,6 +42,7 @@ void Stepper::handleMessage(cMessage *msg)
 
     // Pass the agent's identifier for the observation we need.
     emit(pullObservations, id.c_str()); 
+
     }
     else{
         EV_DEBUG << "Stepper should only receive self messages!" << std::endl;
@@ -132,9 +133,11 @@ void Stepper::receiveSignal(cComponent *source, simsignal_t signalID, cObject *v
             take(activeAgents[id].stepMsg);
             scheduleAt(simTime() + activeAgents[id].stepSize, activeAgents[id].stepMsg);
         }
-
-        EV_TRACE << "Sending data to broker..." << std::endl;
-        emit(stepperToBroker, data, obj);
+        //CHeck if ORCA's obs is vlid, otherwise skip this step
+        if(data->isValid()){
+            emit(stepperToBroker, data, obj);
+        }else{
+        }
 
     }
     

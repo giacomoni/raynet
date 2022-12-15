@@ -16,8 +16,6 @@ struct RLRdpAlgStateVariables extends RdpStateVariables
 {
 
     @descriptor(readonly); 
-    bool rlInitialised = false;
-
     // ----- Per Step Variables 
     simtime_t previousStepTimestamp = 0;
     uint32_t numberOfDataPacketsStep = 0;

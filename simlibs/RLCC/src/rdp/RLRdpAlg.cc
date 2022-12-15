@@ -75,7 +75,6 @@ void RLRdpAlg::initRLAgent(){
 
     // ----- Per flow variable
     state->goodput = 0;
-    state->rlInitialised = true;
     state->timeCwndChanged = simTime().dbl();
     state->cwndReport = state->cwnd;
 
@@ -129,7 +128,7 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
 
      if(state->slowStart){
         
-        if(!state->rlInitialised && (state->sRtt.dbl() != 0)){
+        if(rlInitialised && (state->sRtt.dbl() != 0)){
             initRLAgent();
             // Send the initial step size along
             cObject* simtime = new cSimTime(2*state->rttPropEstimator.getMin());
@@ -181,7 +180,7 @@ void RLRdpAlg::receivedData(unsigned int seqNum, bool isMarked)
                 state->numberOfRecoveredDataPacketsStep = state->numberOfRecoveredDataPacketsStep + 1;
                 state->currentlyNackedPackets.erase(seqNum);
             } else {
-                if(state->rlInitialised){
+                if(rlInitialised){
                     state->goodputStep = 8*(double(state->numberOfDataPacketsStep)*1500/((simTime() - state->previousStepTimestamp).dbl()));
                 }
                 else{
@@ -235,8 +234,7 @@ void RLRdpAlg::receivedData(unsigned int seqNum, bool isMarked)
                 conn->closeConnection();
                 this->done = true;
 
-                if(state->rlInitialised)
-                    conn->emit(this->unregisterSig, stringId.c_str());
+                this->terminate();
             
             }
         }

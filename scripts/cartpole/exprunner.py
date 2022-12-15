@@ -3,9 +3,9 @@ import os
 
 if __name__ == "__main__":
     
-    SEEDS =  [1,10,100]
-    ENVS = ["OmnetGymApiEnv", "CartPole-v1"]
-    WORKERS = [2,4,8,16,32,64,128,255]
+    SEEDS =  [1,10]
+    ENVS = ["CartPole-v1"]
+    WORKERS = [2,4,8,16,31]
     
     
     for params in itertools.product(ENVS, WORKERS, SEEDS):

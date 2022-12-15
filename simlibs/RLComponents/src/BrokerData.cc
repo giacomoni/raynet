@@ -1,65 +1,69 @@
 #include "BrokerData.h"
 
-
-
 BrokerData::BrokerData()
-    {
-    
-    }
+{
+}
 
 BrokerData::~BrokerData()
-    {
-    
-    }
-    
+{
+}
+
 ActionType BrokerData::getAction()
-    {
-        return action;
-    }
+{
+    return action;
+}
 
 bool BrokerData::isReset()
-    {
-        return reset;
-    }
+{
+    return reset;
+}
 
 void BrokerData::setReset(bool _reset)
-    {
-        reset = _reset;
-    }
+{
+    reset = _reset;
+}
+
+bool BrokerData::isValid()
+{
+    return valid;
+}
+
+void BrokerData::setValid(bool _valid)
+{
+    valid = _valid;
+}
 
 void BrokerData::setAction(ActionType act)
-    {
-        action = act;
-    }
-
-
+{
+    action = act;
+}
 
 bool BrokerData::getDone()
-    {
-        return done;
-    }
+{
+    return done;
+}
 
 void BrokerData::setDone(bool finished)
-    {
-        done = finished;
-    }
+{
+    done = finished;
+}
 
 RewardType BrokerData::getReward()
-    {
-        return reward;
-    }
+{
+    return reward;
+}
 
 void BrokerData::setReward(RewardType award)
-    {
-        reward = award;
-    }
+{
+    reward = award;
+}
 
 ObsType BrokerData::getObs()
-    {
-        return obs;
-    }
+{
+    return obs;
+}
 
 void BrokerData::setObs(ObsType state)
-    {
-        obs = state;
-    }
+{
+    obs = state;
+}

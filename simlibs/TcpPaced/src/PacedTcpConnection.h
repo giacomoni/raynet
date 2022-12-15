@@ -66,7 +66,8 @@ public:
 
     cMessage *paceMsg;
 
-    simtime_t intersendingTime;
+    simtime_t intersendingTime = 0;
+    simtime_t last_time_sent = 0;
 
     /**
      * Process self-messages (timers).
@@ -77,6 +78,7 @@ public:
     virtual bool processTimer(cMessage *msg);
     virtual void sendToIP(Packet *packet, const Ptr<TcpHeader> &tcpseg);
     virtual void changeIntersendingTime(simtime_t _intersendingTime);
+    virtual void transmitPacket();
 
     cOutVector paceValueVec;
     cOutVector bufferedPacketsVec;

@@ -253,13 +253,15 @@ std::string Cmdrlenv::step(ActionType action, bool isReset){
 
             }
         }
+        FINALLY();
     }
     catch (cTerminationException& e) {
         FINALLY();
 
+
         stoppedWithTerminationException(e);
         displayException(e);
-        return "nostep";
+        return "SIMULATION_END";
     }
     catch (std::exception& e) {
         FINALLY();
@@ -296,6 +298,15 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
 }
 
     target->setActionAndMove(actionAndMove);
+    
+     #define FINALLY() { \
+        if (opt->expressMode) \
+            doStatusUpdate(speedometer); \
+        loggingEnabled = true; \
+        stopClock(); \
+        deinstallSignalHandler(); \
+    }
+
 
     // only used by Express mode, but we need it in catch blocks too
     try {
@@ -380,35 +391,27 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
                 if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
 
-               
-                
-               
 
             }
         }
+        FINALLY();
     }
     catch (cTerminationException& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
-
-        stoppedWithTerminationException(e);
-        displayException(e);
-        return;
+        FINALLY();	
+        stoppedWithTerminationException(e);	
+        displayException(e);	
+        return "SIMULATION_END";
     }
     catch (std::exception& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
+        FINALLY();
         throw;
     }
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
     if (opt->expressMode)
         doStatusUpdate(speedometer);
+
+        		
+#undef FINALLY
 }
 
 
@@ -417,6 +420,7 @@ void Cmdrlenv::endSimulation(){
 
     if (opt->verbose)
         out << "\nCalling finish() at end of Run" << endl;
+
     getSimulation()->callFinish();
     cLogProxy::flushLastLine();
 

@@ -37,7 +37,7 @@ class GymApi{
         void initialise(std::string inipath);
         std::unordered_map<std::string, ObsType > reset();
         // std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string, bool > > step(ActionType action);
-        std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string, bool > > step(std::unordered_map<std::string, ActionType > actions);
+        std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string, bool >, std::unordered_map<std::string,bool > > step(std::unordered_map<std::string, ActionType > actions);
 
         void cleanupmemory();
 

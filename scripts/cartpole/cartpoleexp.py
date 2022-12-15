@@ -52,7 +52,7 @@ class OmnetGymApiEnv(gym.Env):
         actions = {'cartpole': action}
         theta_threshold_radians = 12 * 2 * math.pi / 360
         x_threshold = 2.4
-        obs, rewards, dones = self.runner.step(actions)
+        obs, rewards, dones, info_ = self.runner.step(actions)
         reward = round(rewards['cartpole'],4)
         obs = obs['cartpole']
 
@@ -83,11 +83,11 @@ if __name__ == '__main__':
     random.seed(seed)
     np.random.seed(seed)
 
-    ray.init(num_cpus=256)
+    ray.init(num_cpus=32)
 
     config = {"env": env,
             "num_workers" : num_workers,
-            "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"},
+            # "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"},
             "evaluation_config": {
                                 "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"},
                                 "explore": False
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         "DQN",  
         name=f"{env}_{num_workers}_{seed}",
         config=config, 
-        stop={"episode_reward_mean": 500.0},
+        stop={"episode_reward_mean": 450.0},
         time_budget_s=2000, 
         checkpoint_at_end= True)
     
