@@ -143,6 +143,7 @@ void Orca::receivedDataAck(uint32_t firstSeqAcked)
 
         conn->emit(min_rttSignal, state->min_rtt);
 
+        std::cout << state->last_rtt << std::endl;
         if (state->last_rtt.inUnit(SIMTIME_US) > 0)
         {
             uint64_t tmp_avg = 0;
@@ -199,7 +200,7 @@ ObsType Orca::computeObservation()
     std::cout << "Computing obs" << std::endl;
     // Step is valid if not in slow start and ack have been received in the MI and the connection
     // is not in loss recovery state. 
-    if (state->orca_cnt > 0 && !state->lossRecovery)
+    if (state->orca_cnt > 0)
     {
 
         if(state->snd_cwnd >= state->ssthresh){
@@ -264,7 +265,6 @@ ObsType Orca::computeObservation()
     {  
         std::cout << "obs is NOT valid" << std::endl;
         std::cout << state->orca_cnt << std::endl;
-         std::cout << state->lossRecovery << std::endl;
 
         isValid = false;
         return {
@@ -280,7 +280,7 @@ ObsType Orca::computeObservation()
 RewardType Orca::computeReward()
 {
     std::cout << "Computing reward" << std::endl;
-    if (state->orca_cnt > 0 && !state->lossRecovery && state->snd_cwnd >= state->ssthresh)
+    if (state->orca_cnt > 0 &&  state->snd_cwnd >= state->ssthresh)
     {
         double loss_rate = (double)(state->lost_bytes - state->pre_lost_bytes) / ((double)(simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0);
         double delay_metric;
