@@ -124,7 +124,7 @@ void Orca::receivedDataAck(uint32_t firstSeqAcked)
     // rate *= max(state->snd_cwnd, state->pipe);
     // rate /= (state->srtt.inUnit(SIMTIME_US) >> 3);
 
-    rate = =1024*(state->snd_cwnd / state->snd_mss)/(1024*state->srtt.dbl())
+    rate = 1024*(state->snd_cwnd / state->snd_mss)/(1024*state->srtt.dbl())
 
     state->pacing_rate = std::min(rate, state->max_pacing_rate);
 
