@@ -119,19 +119,21 @@ void Orca::receivedDataAck(uint32_t firstSeqAcked)
 
     //Update pacing rate
     uint64_t rate;
-    rate = 1500; //
-    rate *= 1000000;
-    rate *= max(state->snd_cwnd, state->pipe);
-    rate /= (state->srtt.inUnit(SIMTIME_US) >> 3);
+    // rate = state->snd_mss; //
+    // rate *= 1000000;
+    // rate *= max(state->snd_cwnd, state->pipe);
+    // rate /= (state->srtt.inUnit(SIMTIME_US) >> 3);
+
+    rate = =1024*(state->snd_cwnd / state->snd_mss)/(1024*state->srtt.dbl())
 
     state->pacing_rate = std::min(rate, state->max_pacing_rate);
 
     conn->emit(pacing_rateSignal, state->pacing_rate);
 
     // Update sending pace
-    // auto pacedConn = check_and_cast<PacedTcpConnection *>(this->conn);
+    auto pacedConn = check_and_cast<PacedTcpConnection *>(this->conn);
 
-    // pacedConn->changeIntersendingTime(1.0 / (state->pacing_rate / state->snd_mss));
+    pacedConn->changeIntersendingTime(1.0 / (double)state->pacing_rate);
     // pacedConn->changeIntersendingTime(0);
 
     // Update RTT
