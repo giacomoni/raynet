@@ -10,6 +10,8 @@ rm $HOME/inet-4.4.1-src.tgz
 
 fi
 
+./inetpatch.sh
+
 cd $HOME/inet4.4 && \
 . setenv -f && \
 make makefiles && \
