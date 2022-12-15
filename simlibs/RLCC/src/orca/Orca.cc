@@ -134,8 +134,6 @@ void Orca::receivedDataAck(uint32_t firstSeqAcked)
     // pacedConn->changeIntersendingTime(1.0 / (state->pacing_rate / state->snd_mss));
     pacedConn->changeIntersendingTime(0);
 
-    std::cout << state->last_rtt << std::endl;
-
     // Update RTT
     if (state->last_rtt.inUnit(SIMTIME_US) > 0)
     {
