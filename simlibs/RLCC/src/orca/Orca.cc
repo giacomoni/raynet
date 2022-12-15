@@ -183,6 +183,7 @@ void Orca::receivedDuplicateAck()
 
 void Orca::initRLAgent()
 {
+    std::cout << "Initialising RL agent " << std::endl;
     this->setOwner(this->conn);
     RLInterface::initialise();
 
@@ -195,6 +196,7 @@ void Orca::initRLAgent()
 
 ObsType Orca::computeObservation()
 {   
+    std::cout << "Computing obs" << std::endl;
     // Step is valid if not in slow start and ack have been received in the MI and the connection
     // is not in loss recovery state. 
     if (state->orca_cnt > 0 && !state->lossRecovery)
@@ -238,6 +240,7 @@ ObsType Orca::computeObservation()
         conn->emit(feature7Signal, feature7);
 
         isValid = true;
+        std::cout << "Obs is valid" << std::endl;
 
         return {
             feature1,
@@ -259,6 +262,7 @@ ObsType Orca::computeObservation()
     }
     else
     {  
+        std::cout << "obs is NOT valid" << std::endl;
         isValid = false;
         return {
             0,
@@ -272,6 +276,7 @@ ObsType Orca::computeObservation()
 }
 RewardType Orca::computeReward()
 {
+    std::cout << "Computing reward" << std::endl;
     if (state->orca_cnt > 0 && !state->lossRecovery && state->snd_cwnd >= state->ssthresh)
     {
         double loss_rate = (double)(state->lost_bytes - state->pre_lost_bytes) / ((double)(simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0);
