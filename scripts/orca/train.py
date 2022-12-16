@@ -42,9 +42,7 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
-        self.step_counter = 1
     def reset(self):
-        self.step_counter=1
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -81,8 +79,7 @@ class OmnetGymApiEnv(gym.Env):
         return obs
 
     def step(self, action):
-        print(self.step_counter)
-        self.counter += 1
+
         action = 2**action
 
         actions = {self.agentId: action}
