@@ -123,13 +123,8 @@ config = {"env": "OmnetppEnv",
           "linkrate_range": [64,64],
           "rtt_range": [16, 16],
           "buffer_range": [250, 250],},
-"model": {
-        "custom_model": "bn_model",
-        # Extra kwargs to be passed to your model's c'tor.
-        "custom_model_config": {},
-    },
-         "framework": "tf",
-          "num_workers": 16,
+
+          "num_workers": 1,
           "horizon": 2000,
           "no_done_at_end": True,
           "soft_horizon": False,
