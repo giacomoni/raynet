@@ -322,7 +322,7 @@ void Orca::decisionMade(ActionType action)
             uint32_t target_ratio = ((action * 100) * cwnd) / 100;
             conn->emit(actionSignal, action);
             std::cout << "action: " << action << std::endl;
-            std::cout << "new window: " << std::max(target_ratio, 1) << std::endl << std::endl;
+            std::cout << "new window: " << std::max((uint32_t)target_ratio, 1U) << std::endl << std::endl;
            
 
             state->snd_cwnd = std::max(target_ratio * state->snd_mss, state->snd_mss);
