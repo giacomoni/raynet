@@ -121,7 +121,7 @@ config = {"env": "OmnetppEnv",
           "rtt_range": [16, 16],
           "buffer_range": [250, 250],},
 
-          "num_workers": 2,
+          "num_workers": 1,
           "horizon": 2000,
           "no_done_at_end": True,
           "soft_horizon": False,

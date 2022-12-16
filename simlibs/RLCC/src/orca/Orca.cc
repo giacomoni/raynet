@@ -210,7 +210,7 @@ ObsType Orca::computeObservation()
         if (state->max_bw > 0)
         {
             feature1 = double(state->avg_thr) / double(state->max_bw);
-            feature2 = std::min((double)state->pacing_rate / (double)state->max_bw, 10.0);
+            feature2 = std::min(((double)state->pacing_rate * state->snd_mss)/ (double)state->max_bw, 10.0);
             feature3 = 5.0 * loss_rate / (double)state->max_bw;
         }
         else
@@ -240,6 +240,14 @@ ObsType Orca::computeObservation()
         conn->emit(feature7Signal, feature7);
 
         isValid = true;
+
+        std::cout << "throughput: " << feature1 << std::endl;
+        std::cout << "pacing: " << feature2 << std::endl;
+        std::cout << "lossrate: " << feature3/5.0 << std::endl;
+        std::cout << "orca_cnt: " << feature4 << std::endl;
+        std::cout << "mi_t: " << feature5 << std::endl;
+        std::cout << "minrtt/rtt: " << feature6 << std::endl;
+        std::cout << "delay metric: " << feature7 << std::endl << std::endl;
 
         return {
             feature1,
