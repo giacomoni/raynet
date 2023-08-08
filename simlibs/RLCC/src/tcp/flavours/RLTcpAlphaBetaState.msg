@@ -17,7 +17,7 @@ import inet.common.INETDefs;
 import inet.transportlayer.tcp_common.TcpHeader;
 import inet.transportlayer.tcp.flavours.TcpTahoeRenoFamilyState;
 
-namespace inet::tcp;
+
 
 
 cplusplus {{
@@ -30,6 +30,7 @@ class Estimator
    //FIXME tostring, ...
 }
 
+namespace inet::tcp;
 
 
 
