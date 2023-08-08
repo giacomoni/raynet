@@ -9,41 +9,13 @@ namespace rdp {
 
 Register_Class(RLRdpAlg);
 
+
 simsignal_t RLRdpAlg::cwndSignal = cComponent::registerSignal("cwnd");    // will record changes to snd_cwnd
 simsignal_t RLRdpAlg::ssthreshSignal = cComponent::registerSignal("ssthresh");    // will record changes to ssthresh
 
-
-RLRdpAlgStateVariables::RLRdpAlgStateVariables()
-{
-    
-    //Number of packets currently in the network. Initial value is set to the Initial Window. For each trimmed header or data paket received,
-    //this vlue is dereased. New PULL REQUESTS to send will equal  cwnd - packetsInFlight
-    packetsInFlight = 0;
-    
-    rlInitialised = false;
-
-  
-    previousStepTimestamp = SIMTIME_ZERO;
-    numberOfDataPacketsStep = 0;
-    numberOfTrimmedPacketsStep = 0;
-    numberOfRecoveredDataPacketsStep = 0;
-    numberOfTrimmedBytesStep = 0;
-    goodputStep = 0; //Updated everytime we receive a new data packet.
-    estLinkRate = 0;
-
-    // ----- Per flow variable
-    goodput = 0;
-
-    consecutiveBadSteps = 0;
-
-    timeCwndChanged = 0;
-    cwndReport = 0;
-    slowStart = true;
-
-    bandwidthEstimator.setWindowSize(10);
-
-    pacingTime = 0;
-}
+  RLRdpAlgStateVariables::~RLRdpAlgStateVariables(){}
+   std::string RLRdpAlgStateVariables::str() const {}
+    std::string RLRdpAlgStateVariables::detailedInfo() const{}
 
 RLRdpAlg::RLRdpAlg() :
         RdpAlgorithm(), state((RLRdpAlgStateVariables*&) RdpAlgorithm::state)
@@ -58,6 +30,8 @@ RLRdpAlg::~RLRdpAlg()
 
 void RLRdpAlg::initialize()
 {
+    state->bandwidthEstimator.setWindowSize(10);
+
 
 }
 
@@ -71,7 +45,7 @@ void RLRdpAlg::processTimer(cMessage *timer, RdpEventCode &event)
 
 }
 
-void RLRdpAlg::dataSent(uint32 fromseq)
+void RLRdpAlg::dataSent(uint32_t fromseq)
 {
 
 }
@@ -101,7 +75,6 @@ void RLRdpAlg::initRLAgent(){
 
     // ----- Per flow variable
     state->goodput = 0;
-    state->rlInitialised = true;
     state->timeCwndChanged = simTime().dbl();
     state->cwndReport = state->cwnd;
 
@@ -124,8 +97,7 @@ void RLRdpAlg::resetStepVariables(){
 
 
 void RLRdpAlg::receivedHeader(unsigned int seqNum)
-{   
-    
+{       
     conn->sendNackRdp(seqNum);
     state->numRcvTrimmedHeader++;
 
@@ -156,7 +128,7 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
 
      if(state->slowStart){
         
-        if(!state->rlInitialised && (state->sRtt.dbl() != 0)){
+        if(rlInitialised && (state->sRtt.dbl() != 0)){
             initRLAgent();
             // Send the initial step size along
             cObject* simtime = new cSimTime(2*state->rttPropEstimator.getMin());
@@ -174,8 +146,9 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
  
 }
 
-void RLRdpAlg::receivedData(unsigned int seqNum)
+void RLRdpAlg::receivedData(unsigned int seqNum, bool isMarked)
 {
+
     // ----- On RECEIVER: received data packet
     conn->sendAckRdp(seqNum);
     state->numberReceivedPackets++;
@@ -207,7 +180,7 @@ void RLRdpAlg::receivedData(unsigned int seqNum)
                 state->numberOfRecoveredDataPacketsStep = state->numberOfRecoveredDataPacketsStep + 1;
                 state->currentlyNackedPackets.erase(seqNum);
             } else {
-                if(state->rlInitialised){
+                if(rlInitialised){
                     state->goodputStep = 8*(double(state->numberOfDataPacketsStep)*1500/((simTime() - state->previousStepTimestamp).dbl()));
                 }
                 else{
@@ -231,7 +204,6 @@ void RLRdpAlg::receivedData(unsigned int seqNum)
 
         if(state->slowStart){
             state->cwnd = state->cwnd+1;
-
         }
 
         double alpha=0.0;
@@ -261,11 +233,13 @@ void RLRdpAlg::receivedData(unsigned int seqNum)
             if (state->numberReceivedPackets == state->numPacketsToGet || state->connFinished == true) {
                 conn->closeConnection();
                 this->done = true;
-                conn->emit(this->unregisterSig, stringId.c_str());
+
+                this->terminate();
             
             }
         }
     }
+
     conn->emit(cwndSignal, state->cwnd);
 }
 
@@ -301,6 +275,7 @@ ObsType RLRdpAlg::computeObservation(){
     if(state->consecutiveBadSteps >= 3){
         conn->closeConnection();
         this->done = true;
+
         conn->emit(this->unregisterSig, stringId.c_str());
        
     }
@@ -399,6 +374,7 @@ void RLRdpAlg::decisionMade(ActionType action){
     // Reschedule next step according to new sRTT
      if (stepSize > SIMTIME_ZERO){
         cString* c_name = new cString(stringId);
+
         conn->emit(modifyStepSizeSig, 2*stepSize.dbl(), c_name);
     }
 

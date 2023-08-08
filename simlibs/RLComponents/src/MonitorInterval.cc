@@ -19,7 +19,7 @@
 
 namespace learning {
 
-MonitorInterval::MonitorInterval(uint32 _miNumber, uint32 _firstSeqSent, simtime_t _miStart, bool _isFirstPacketSent, bool _deferredTicking, double _action)
+MonitorInterval::MonitorInterval(uint32_t _miNumber, uint32_t _firstSeqSent, simtime_t _miStart, bool _isFirstPacketSent, bool _deferredTicking, double _action)
 {
     ackForLastSegmentTime = SimTime::ZERO;
     miNumber = _miNumber;

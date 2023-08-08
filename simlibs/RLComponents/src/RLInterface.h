@@ -43,6 +43,7 @@ protected:
     // variables to keep track of the transitioning of states and the action taken
     State rlOldState, rlState;
     int stateSize;
+    bool isValid = true;
     ActionType lastMiAction;
     double delayWeightReward;
     // ---------------------------------------------------------------------------
@@ -59,6 +60,7 @@ protected:
     simsignal_t unregisterSig;
     simsignal_t modifyStepSizeSig;
 
+    bool rlInitialised = false;
     bool done; //Whether this agent's episode terminated
     bool isReset; //Whether the environemt is being reset right now
 
@@ -77,6 +79,7 @@ public:
     void setStringId(std::string _id);
 
     void initialise();
+    void terminate();
 
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override; // callback for receiving action response
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *value, cObject *details) override; // callback for receiving action response

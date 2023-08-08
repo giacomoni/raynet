@@ -26,8 +26,8 @@ network simplenetwork
     types:
         channel ethernetline extends DatarateChannel
         {
-            delay = minDelay;
-            datarate = linkrate;
+            delay = parent.minDelay;
+            datarate = parent.linkrate;
         }
     submodules:
         client[numberOfClients]: StandardHostRdp {

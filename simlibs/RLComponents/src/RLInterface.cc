@@ -60,6 +60,7 @@ void RLInterface::setStringId(std::string _id)
 
 void RLInterface::initialize(int stateSize, int maxObsSize)
 {
+    std::cerr << "Registering Interface" << std::endl;
     senderToStepper = owner -> registerSignal("senderToStepper"); 
     registerSig = owner->registerSignal("registerAgent");
     unregisterSig  = owner->registerSignal("unregisterAgent");
@@ -70,11 +71,13 @@ void RLInterface::initialize(int stateSize, int maxObsSize)
     done = false;
     isReset = false;
     lastMiAction = 0;
+    rlInitialised = true;
+
 }
 
 void RLInterface::initialise()
 {
-    senderToStepper = owner -> registerSignal("senderToStepper"); 
+    senderToStepper = owner->registerSignal("senderToStepper"); 
     registerSig = owner->registerSignal("registerAgent");
     unregisterSig  = owner->registerSignal("unregisterAgent");
     modifyStepSizeSig = owner->registerSignal("modifyStepSize");
@@ -86,6 +89,17 @@ void RLInterface::initialise()
     done = false;
     isReset = false;
     lastMiAction = 0;
+    rlInitialised = true;
+
+}
+
+void RLInterface::terminate(){
+    if(rlInitialised){
+    owner->emit(unregisterSig, stringId.c_str());
+    getSimulation()->getSystemModule()->unsubscribe("actionResponse", (cListener*) this);
+    getSimulation()->getSystemModule()->unsubscribe("pullObservations", (cListener*) this);
+    rlInitialised = false;
+    }
 }
 
 
@@ -161,6 +175,7 @@ void RLInterface::receiveSignal(cComponent *source, simsignal_t id, const char *
             return_data->setReset(isReset);
             //TODO: compute actual observastion
             return_data->setObs(computeObservation());
+            return_data->setValid(isValid);
             if (!isReset){
                 return_data->setDone(done);
                 //TODO: compute actual reward
@@ -174,6 +189,7 @@ void RLInterface::receiveSignal(cComponent *source, simsignal_t id, const char *
 
             cString * obj = new cString(stringId);
             owner->emit(senderToStepper, return_data, obj); 
+            isValid = true;
         }
     }
     else

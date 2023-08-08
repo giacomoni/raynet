@@ -16,7 +16,7 @@ inline bool elapsed(long millis, int64_t& since)
 void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *configobject){
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwsm");  // TODO share spec with startup.cc!
+    args->parse(argc, argv, ARGSPEC);  // TODO share spec with startup.cc!
     opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
@@ -29,11 +29,12 @@ void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *con
         // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
         // invokes readOptions()).
 
-        opt->configName = opp_nulltoempty(args->optionValue('c'));
+        if (args->optionGiven('c'))  // note: do not overwrite value from cmdenv-config-name option
+            opt->configName = args->optionValue('c');
         if (opt->configName.empty())
             opt->configName = "General";
 
-        if (args->optionGiven('r'))  // note: there's also a cmdenv-runs-to-execute option!
+        if (args->optionGiven('r'))  // note: do not overwrite value from cmdenv-runs-to-execute option!
             opt->runFilter = args->optionValue('r');
 
         std::vector<int> runNumbers;
@@ -48,8 +49,7 @@ void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *con
 
         bool finishedOK = false;
         bool networkSetupDone = false;
-        bool startrunCalled = false;
-
+        bool endRunRequired = false;
         try{
             if (opt->verbose)
                     out << "\nPreparing for running configuration " << opt->configName << ", run #" << 0 << "..." << endl;
@@ -79,8 +79,12 @@ void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *con
                 }
 
                 // find network
+                if (opt->networkName.empty())
+                    throw cRuntimeError("No network specified (missing or empty network= configuration option)");
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
                 ASSERT(network);
+
+                endRunRequired = true;
 
                 // set up network
                 if (opt->verbose)
@@ -94,9 +98,8 @@ void  Cmdrlenv::initialiseEnvironment(int argc, char *argv[],cConfiguration *con
                     out << "Initializing..." << endl;
 
                 loggingEnabled = !opt->expressMode;
-
-                startrunCalled = true;
-                startRun(); // Mainly call initialise on all model modules. 
+                
+                prepareForRun();
 
                 // run the simulation
                 if (opt->verbose)
@@ -158,6 +161,14 @@ std::string Cmdrlenv::step(ActionType action, bool isReset){
 
     target->setActionAndMove(actionAndMove);
 
+    #define FINALLY() { \
+        if (opt->expressMode) \
+            doStatusUpdate(speedometer); \
+        loggingEnabled = true; \
+        stopClock(); \
+        deinstallSignalHandler(); \
+    }
+
     // only used by Express mode, but we need it in catch blocks too
     try {
         if (!opt->expressMode) {
@@ -184,8 +195,7 @@ std::string Cmdrlenv::step(ActionType action, bool isReset){
                 */
                
                 string eventName = event -> getName();
-                getSimulation()->executeEvent(event);
-                
+                getSimulation()->executeEvent(event);                
 
                 if (eventName.find(std::string("EOS")) != std::string::npos) {
                     std::string agentId = eventName.substr(eventName.find(std::string("-"))+1);
@@ -243,29 +253,25 @@ std::string Cmdrlenv::step(ActionType action, bool isReset){
 
             }
         }
+        FINALLY();
     }
     catch (cTerminationException& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
+        FINALLY();
+
 
         stoppedWithTerminationException(e);
         displayException(e);
-        return "nostep";
+        return "SIMULATION_END";
     }
     catch (std::exception& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
+        FINALLY();
         throw;
     }
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
     if (opt->expressMode)
         doStatusUpdate(speedometer);
+
+#undef FINALLY
 }
 
 std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions, bool isReset){
@@ -292,6 +298,15 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
 }
 
     target->setActionAndMove(actionAndMove);
+    
+     #define FINALLY() { \
+        if (opt->expressMode) \
+            doStatusUpdate(speedometer); \
+        loggingEnabled = true; \
+        stopClock(); \
+        deinstallSignalHandler(); \
+    }
+
 
     // only used by Express mode, but we need it in catch blocks too
     try {
@@ -376,35 +391,27 @@ std::string Cmdrlenv::step(std::unordered_map<std::string, ActionType>  actions,
                 if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
 
-               
-                
-               
 
             }
         }
+        FINALLY();
     }
     catch (cTerminationException& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
-
-        stoppedWithTerminationException(e);
-        displayException(e);
-        return;
+        FINALLY();	
+        stoppedWithTerminationException(e);	
+        displayException(e);	
+        return "SIMULATION_END";
     }
     catch (std::exception& e) {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        loggingEnabled = true;
-        stopClock();
-        deinstallSignalHandler();
+        FINALLY();
         throw;
     }
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
     if (opt->expressMode)
         doStatusUpdate(speedometer);
+
+        		
+#undef FINALLY
 }
 
 
@@ -413,6 +420,7 @@ void Cmdrlenv::endSimulation(){
 
     if (opt->verbose)
         out << "\nCalling finish() at end of Run" << endl;
+
     getSimulation()->callFinish();
     cLogProxy::flushLastLine();
 

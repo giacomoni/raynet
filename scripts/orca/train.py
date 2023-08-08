@@ -10,35 +10,49 @@ import ray
 import pandas as pd
 from ray.rllib.models import ModelCatalog
 import os
+from collections import deque
 
-ModelCatalog.register_custom_model("bn_model",KerasBatchNormModel)
 
+# ModelCatalog.register_custom_model("bn_model",KerasBatchNormModel)
 
-ray.init(num_cpus=15)
+def uniform(low=0, high=1):
+    return np.random.uniform(low, high)
 
 class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
-        self.reward_total = 0
-        self.obs_list = [(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0)]
         self.env_config = env_config
+        self.stacking = env_config['stacking']
+        self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
+        self.obs_min = np.tile(np.array([-1000000000,  
+                                 -1000000000,   
+                                 -1000000000,   
+                                 -1000000000,
+                                 -1000000000,
+                                 -1000000000,
+                                 -1000000000], dtype=np.float32), self.stacking)
 
-        self.action_space = spaces.Box(
-            low=-2, high=2, shape=(1,), dtype=np.float32
-        )
-
-        self.observation_space = spaces.Box(
-            low=-np.finfo(np.float32).max, high=np.finfo(np.float32).max, shape = (10*9,), dtype=np.float32)
+        self.obs_max = np.tile(np.array([10000000000, 
+                                 10000000000, 
+                                 10000000000, 
+                                 10000000000,
+                                 10000000000,
+                                 10000000000,
+                                 10000000000],dtype=np.float32), self.stacking)
+        self.currentRecord = None
+        self.observation_space = spaces.Box(low=self.obs_min, high=self.obs_max, dtype=np.float32)
         self.runner = OmnetGymApi()
-
+        self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
+        self.agentId = None
     def reset(self):
+        self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
+        # Draw network parameters from space
+        linkrate_range = self.env_config["linkrate_range"]
+        rtt_range = self.env_config["rtt_range"]
+        buffer_range = self.env_config["buffer_range"]
 
-        # per = np.random.uniform(0.001,0.007)
-        # delay = np.random.uniform(0.005,0.010)
-        # datarate = np.random.uniform(50,100)
-
-        per = 0.002
-        delay = 0.005
-        datarate = 85
+        linkrate = uniform(low=linkrate_range[0], high=linkrate_range[1])
+        rtt = uniform(low=rtt_range[0], high=rtt_range[1])/2.0
+        buffer = uniform(low=buffer_range[0], high=buffer_range[1])
 
         original_ini_file = self.env_config["iniPath"]
         worker_ini_file = original_ini_file + f".worker{os.getpid()}_{self.env_config.worker_index}"
@@ -46,74 +60,82 @@ class OmnetGymApiEnv(gym.Env):
         with open(original_ini_file, 'r') as fin:
             ini_string = fin.read()
         
-        ini_string = ini_string.replace("PER_PLACEOLDER", str(per))
-        ini_string = ini_string.replace("DELAY_PLACEHOLDER", str(delay) + "s")
-        ini_string = ini_string.replace("RATE_PLACEHOLDER", str(datarate) + "Mbps")
+        ini_string = ini_string.replace("DELAY_PLACEOLDER", f'{round(rtt,2)}ms')
+        ini_string = ini_string.replace("LINKRATE_PLACEHOLDER", f'{round(linkrate)}Mbps')
+        ini_string = ini_string.replace("Q_PLACEHOLDER", str(round(buffer)))
         ini_string = ini_string.replace("HOME",  os.getenv('HOME'))
 
         with open(worker_ini_file, 'w') as fout:
             fout.write(ini_string)
 
         self.runner.initialise(worker_ini_file)
-
-        print("paramters: ")
-        print(per) 
-        print(delay) 
-        print(datarate)
-
-        self.obs_list = [(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0)]
-        self.reward_total = 0
-        multi_obs = self.runner.reset()
-        obs  = multi_obs["4"][:9]
-        self.obs_list.pop(0)
-        self.obs_list.append(np.asarray(obs))
-        return np.asarray(self.obs_list, dtype=np.float32).flatten()
+        obs = self.runner.reset()
+        if len(obs.keys()) > 1:
+            print(f"************ ERROR: expected only 1 flow, but {len(obs.keys())} were found.") 
+        self.agentId = list(obs.keys())[0]
+        obs = obs[self.agentId]
+        self.currentRecord = obs
+        self.obs.extend(obs)
+        obs = np.asarray(list(self.obs),dtype=np.float32)
+        return obs
 
     def step(self, action):
-        actions = {'4': action}
-        obs, rewards, dones = self.runner.step(actions)
-        obs_used = obs["4"][:9]
-        self.obs_list.pop(0)
-        self.obs_list.append(np.asarray(obs_used))
-       
-        self.reward_total += rewards["4"] 
-        if dones["4"] == True:
-            print("========================== Total reward of episode is:  " + str(self.reward_total))
-        return np.asarray(self.obs_list, dtype=np.float32).flatten(), float(rewards['4']), dones['4'], {}
+        action = 2**action
+
+        actions = {self.agentId: action}
+
+        if math.isnan(action):
+            print("====================================== action passed is nan =========================================")
+        obs, rewards, dones, info_= self.runner.step(actions)
+        if dones[self.agentId]:
+             self.runner.shutdown()
+             self.runner.cleanup()
+
+        if math.isnan(rewards[self.agentId]):
+            print("====================================== reward returned is nan =========================================")
+        reward = round(rewards[self.agentId],4)
+        if any(np.isnan(np.asarray(obs[self.agentId], dtype=np.float32))):
+            print("====================================== obs returned is nan =========================================")
+        
+
+        obs = obs[self.agentId]
+        self.currentRecord = obs
+        self.obs.extend(obs)
+        obs = np.asarray(list(self.obs),dtype=np.float32)
+
+        if info_['simDone']:
+             dones[self.agentId] = True
+        return  obs, reward, dones[self.agentId], {}
 
 
-def omnetgymapienv_creator(env_config):
+def OmnetGymApienv_creator(env_config):
     return OmnetGymApiEnv(env_config)  # return an env instance
 
+register_env("OmnetppEnv", OmnetGymApienv_creator)
 
-register_env("OmnetGymApiEnv", omnetgymapienv_creator)
-config = {"env": "OmnetGymApiEnv",
-          "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/orca/orcaConfigStatic.ini"},
 
-          "evaluation_interval": 100,
-          "evaluation_config": {
-              "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/orca/orcaConfigStatic.ini"},
-              "explore": False
-          },
-          "num_workers": 10,
-          "horizon": 350,
+config = {"env": "OmnetppEnv",
+          "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/orca/orcaConfigStatic.ini",
+          "stacking": 10,
+          "linkrate_range": [64,64],
+          "rtt_range": [16, 16],
+          "buffer_range": [250, 250],},
+
+          "num_workers": 2,
+          "horizon": 2000,
           "no_done_at_end": True,
           "soft_horizon": False,
-          "optimizer" : "Adam",
-          "lr":0.001,
-          "critic_lr": 0.001,
-          "actor_lr": 0.0001,
-           "exploration_config": {
-             "type": "GaussianNoise",
-             "stddev": 0.2
-            },
-          "train_batch_size":8096,
+        #   "optimizer" : "Adam",
+        #   "lr":0.001,
+        #   "critic_lr": 0.001,
+        #   "actor_lr": 0.0001,
+        #    "exploration_config": {
+        #      "type": "GaussianNoise",
+        #      "stddev": 0.2
+        #     },
+        #   "train_batch_size":8096,
           "gamma": 0.995,
           "framework": 'tf',
-        #   "model": {
-        #     "custom_model" : "bn_model",
-        #     "custom_model_config" : {}
-        #   }
           }
 
 

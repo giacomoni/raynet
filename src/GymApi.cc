@@ -64,7 +64,8 @@ void GymApi::initialise(std::string _iniPath){
     std::string id = env->step(0, isReset);
 
 
-    if(id != "nostep"){
+
+    if(id != "SIMULATION_END"){
         cModule *mod = getSimulation()->getModuleByPath((getSimulation()->getSystemModule()->getFullPath()+string(".broker")).c_str());
         Broker *target = check_and_cast<Broker *>(mod);
 
@@ -86,7 +87,7 @@ void GymApi::initialise(std::string _iniPath){
     }
     else{
         ObsType obs;
-        std::unordered_map<std::string, ObsType> obss = { {"nostep", obs} };
+        std::unordered_map<std::string, ObsType> obss = { {"SIMULATION_END", obs} };
         return obss;
     }
     
@@ -110,12 +111,22 @@ void GymApi::initialise(std::string _iniPath){
 //     return returnTuple;
 // }
 
-std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > GymApi::step(std::unordered_map<std::string, ActionType> actions){
+std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool >, std::unordered_map<std::string,bool > > GymApi::step(std::unordered_map<std::string, ActionType> actions){
     
-    std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > > returnTuple;
+    //Create container for return tuple of step method. 
+    //Contains:
+    //obs, reward, dones, info
+    //where info is a dict (unordered_map) with a single key,value pair "simDone" to denote whether the simulation has been completed.
+    std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::string, RewardType > , std::unordered_map<std::string,bool > , std::unordered_map<std::string,bool > > returnTuple;
     bool isReset = false;
 
     std::string id = env->step(actions, isReset);
+
+    bool simDone = false;
+
+    if(id == "SIMULATION_END"){
+        simDone = true;
+    }
 
     cModule *mod = getSimulation()->getModuleByPath(( getSimulation()->getSystemModule()->getFullPath()+ string(".broker")).c_str());
     Broker *target = check_and_cast<Broker *>(mod);
@@ -162,7 +173,7 @@ std::tuple<std::unordered_map<std::string, ObsType >, std::unordered_map<std::st
 
     dones.insert({"__all__", allDone});
 
-    returnTuple = { obss, rewards, dones };
+    returnTuple = { obss, rewards, dones, { {"simDone", simDone} } };
 
     return returnTuple;
 }
