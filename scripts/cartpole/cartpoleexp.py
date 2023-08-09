@@ -115,8 +115,8 @@ if __name__ == '__main__':
 
     t_start = time.time()
     now = time.time()
-    while (t_start - now) <= 2000:
-        print(f"Total elpsed: {(t_start - now)}")
+    while (now - t_start) <= 2000:
+        print(f"Total elpsed: {(now - t_start)}")
         result = algo.train()
         print(result['episode_reward_mean'])
         if result['episode_reward_mean'] >= 450:
