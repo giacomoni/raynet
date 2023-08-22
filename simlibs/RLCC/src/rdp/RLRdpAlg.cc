@@ -13,9 +13,6 @@ Register_Class(RLRdpAlg);
 simsignal_t RLRdpAlg::cwndSignal = cComponent::registerSignal("cwnd");    // will record changes to snd_cwnd
 simsignal_t RLRdpAlg::ssthreshSignal = cComponent::registerSignal("ssthresh");    // will record changes to ssthresh
 
-  RLRdpAlgStateVariables::~RLRdpAlgStateVariables(){}
-   std::string RLRdpAlgStateVariables::str() const {}
-    std::string RLRdpAlgStateVariables::detailedInfo() const{}
 
 RLRdpAlg::RLRdpAlg() :
         RdpAlgorithm(), state((RLRdpAlgStateVariables*&) RdpAlgorithm::state)
