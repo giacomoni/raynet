@@ -87,6 +87,7 @@ class OmnetGymApiEnv(gym.Env):
 
     def step(self, action):
         self.steps += 1
+        print(self.steps)
         actions = {self.agentId: action}
 
         if math.isnan(action):
