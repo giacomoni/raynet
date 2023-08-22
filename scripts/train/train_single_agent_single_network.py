@@ -87,10 +87,13 @@ class OmnetGymApiEnv(gym.Env):
 
         if math.isnan(action):
             print("====================================== action passed is nan =========================================")
-        obs, rewards, dones = self.runner.step(actions)
+        obs, rewards, dones, info = self.runner.step(actions)
         if dones[self.agentId]:
              self.runner.shutdown()
              self.runner.cleanup()
+        
+        if info['simDone']:
+             dones[self.agentId] = True
 
         if math.isnan(rewards[self.agentId]):
             print("====================================== reward returned is nan =========================================")
