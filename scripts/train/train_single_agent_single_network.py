@@ -109,6 +109,7 @@ def OmnetGymApienv_creator(env_config):
     return OmnetGymApiEnv(env_config)  # return an env instance
 
 register_env("OmnetppEnv", OmnetGymApienv_creator)
+gym.register(id="OmnetppEnv", entry_point=OmnetGymApiEnv, max_episode_steps=400)
 
 
 if __name__ == "__main__":
