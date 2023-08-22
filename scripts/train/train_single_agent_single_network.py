@@ -27,6 +27,7 @@ def lognuniform(low=0, high=1, size=None, base=np.e):
 class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
         self.spec = gym.envs.registration.EnvSpec(id="OmnetppEnv", entry_point=self.__init__,max_episode_steps=400)
+        self.max_episode_steps=400
         self.env_config = env_config
         self.stacking = env_config['stacking']
         self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
@@ -44,8 +45,10 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
+        self.steps = 0
         
     def  reset(self, *, seed=None, options=None):
+        self.steps = 0
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -83,6 +86,7 @@ class OmnetGymApiEnv(gym.Env):
         return obs, {}
 
     def step(self, action):
+        self.steps += 1
         actions = {self.agentId: action}
 
         if math.isnan(action):
@@ -92,7 +96,7 @@ class OmnetGymApiEnv(gym.Env):
              self.runner.shutdown()
              self.runner.cleanup()
         
-        if info['simDone']:
+        if  self.steps >= self.max_episode_steps:
              dones[self.agentId] = True
 
         if math.isnan(rewards[self.agentId]):
