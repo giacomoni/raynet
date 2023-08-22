@@ -13,6 +13,7 @@ import os
 from collections import deque
 from ray.tune.registry import get_trainable_cls
 import sys
+from ray.rllib.algorithms.ppo import PPOConfig
 
 
 from ray.tune.registry import register_env
@@ -43,7 +44,7 @@ class OmnetGymApiEnv(gym.Env):
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
         
-    def reset(self):
+    def  reset(self, *, seed=None, options=None):
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -78,7 +79,7 @@ class OmnetGymApiEnv(gym.Env):
         self.currentRecord = obs[-13:]
         self.obs.extend(obs[:-13])
         obs = np.asarray(list(self.obs),dtype=np.float32)
-        return obs
+        return obs, {}
 
     def step(self, action):
         actions = {self.agentId: action}
@@ -101,8 +102,7 @@ class OmnetGymApiEnv(gym.Env):
         self.currentRecord = obs[-13:]
         self.obs.extend(obs[:-13])
         obs = np.asarray(list(self.obs),dtype=np.float32)
-        return  obs, reward, dones[self.agentId], {}
-
+        return  obs, reward, dones[self.agentId], False, {}
 
 def OmnetGymApienv_creator(env_config):
     return OmnetGymApiEnv(env_config)  # return an env instance
@@ -129,7 +129,6 @@ if __name__ == "__main__":
 
         },
      "num_workers": 2,
-     "horizon": 400,
      "no_done_at_end":True,
      "soft_horizon":False,
      "gamma": alg,
