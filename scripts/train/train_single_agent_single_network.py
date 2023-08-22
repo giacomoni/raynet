@@ -26,7 +26,7 @@ def lognuniform(low=0, high=1, size=None, base=np.e):
 
 class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
-        self.spec = gym.envs.registration.EnvSpec(max_episode_steps=400)
+        self.spec = gym.envs.registration.EnvSpec(id="OmnetppEnv", entry_point=self.__init__,max_episode_steps=400)
         self.env_config = env_config
         self.stacking = env_config['stacking']
         self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
