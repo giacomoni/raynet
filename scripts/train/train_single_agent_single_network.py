@@ -129,8 +129,6 @@ if __name__ == "__main__":
 
         },
      "num_workers": 2,
-     "no_done_at_end":True,
-     "soft_horizon":False,
      "gamma": alg,
      "seed": seed     
      }
