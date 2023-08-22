@@ -1,6 +1,6 @@
 from build.omnetbind import OmnetGymApi 
-import gym
-from gym import spaces, logger
+import gymnasium as gym
+from gymnasium import spaces, logger
 import numpy as np
 import pandas as pd
 import random
@@ -42,6 +42,7 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
+        
     def reset(self):
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
@@ -127,7 +128,7 @@ if __name__ == "__main__":
                                 "stacking": 10
 
         },
-     "num_workers": 5,
+     "num_workers": 2,
      "horizon": 400,
      "no_done_at_end":True,
      "soft_horizon":False,
@@ -135,7 +136,7 @@ if __name__ == "__main__":
      "seed": seed     
      }
 
-    ray.init(num_cpus=32, num_gpus=0, object_store_memory=1000000000)
+    ray.init(num_gpus=0, object_store_memory=1000000000)
     
     # # Create the Trainer from config.
     # cls = get_trainable_cls("SAC")
