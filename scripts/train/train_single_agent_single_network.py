@@ -26,6 +26,7 @@ def lognuniform(low=0, high=1, size=None, base=np.e):
 
 class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
+        self.spec.max_episode_steps = 400
         self.env_config = env_config
         self.stacking = env_config['stacking']
         self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
@@ -115,23 +116,27 @@ if __name__ == "__main__":
     alg = float(sys.argv[1])
     seed = int(sys.argv[2])
 
-    config = {
-        "env": "OmnetppEnv",
-        "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
+    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
                        "linkrate_range": [64,128],
                        "rtt_range": [16, 64],
                        "buffer_range": [80, 800],
-                       "stacking": 10},
-        "evaluation_config": {
+                       "stacking": 10}
+
+    evaluation_config =  {
                                 "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini"},
                                 "explore": False,
                                 "stacking": 10
 
-        },
-     "num_workers": 2,
-     "gamma": alg,
-     "seed": seed     
-     }
+    }
+
+    config = (PPOConfig()
+    .debugging(seed=seed)
+    .training(gamma=alg)
+    .rollouts(num_rollout_workers=2)
+    .resources(num_gpus=0)
+    .environment("OmnetppEnv", env_config=env_config)
+    .evaluation(evaluation_config=evaluation_config) # "ns3-v0"
+    .build())
 
     ray.init(num_gpus=0, object_store_memory=1000000000)
     
