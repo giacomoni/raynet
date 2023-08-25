@@ -6,7 +6,7 @@ import pandas as pd
 import random
 import ray
 import math
-from ray import tune
+from ray import tune, air
 import copy
 import nnmodels
 import os
@@ -131,10 +131,9 @@ if __name__ == "__main__":
                        "stacking": 10}
 
     evaluation_config =  {
-                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini"},
+                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini", "stacking": 10},
                                 "explore": False,
-                                "stacking": 10
-
+                                
     }
 
     config = (PPOConfig()
@@ -143,10 +142,10 @@ if __name__ == "__main__":
     .rollouts(num_rollout_workers=2)
     .resources(num_gpus=0)
     .environment("OmnetppEnv", env_config=env_config)
-    .evaluation(evaluation_config=evaluation_config) # "ns3-v0"
-    .build())
+    .evaluation(evaluation_config=evaluation_config)
+     ) # "ns3-v0")
 
-    ray.init(num_gpus=0, object_store_memory=1000000000)
+    ray.init(num_gpus=0, object_store_memory=1000000000, ignore_reinit_error=True)
     
     # # Create the Trainer from config.
     # cls = get_trainable_cls("SAC")
@@ -157,15 +156,20 @@ if __name__ == "__main__":
     # checkpoint_file = f"/checkpoint-9000" 
     # agent.restore(checkpoint_path + checkpoint_file)
 
-    tune.run(
+    tuner = tune.Tuner(
         "PPO",
-        name=f"PPOgamma_{alg}_{seed}",
-        stop={"timesteps_total": 1000000},
-        config=config,
-        checkpoint_freq=100,
-        checkpoint_at_end=True,
-        resume=False
+        
+        run_config=air.RunConfig(stop={"timesteps_total": 1000000}, 
+                                 name=f"PPOgamma_{alg}_{seed}",
+                                 checkpoint_config=air.CheckpointConfig(checkpoint_frequency=100,
+                                                                        checkpoint_at_end=True
+                                                                        ),
+                        ),
+        param_space=config
+        
     )
+
+    tuner.fit()
 
 
 
