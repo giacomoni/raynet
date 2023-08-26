@@ -123,7 +123,7 @@ register_env("OmnetppEnv", OmnetGymApienv_creator)
 
 if __name__ == "__main__":
     
-    alg = float(sys.argv[1])
+    alg = sys.argv[1]
     seed = int(sys.argv[2])
 
     env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
