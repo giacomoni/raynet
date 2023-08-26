@@ -123,9 +123,11 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
                 }
             }
 
+    std::cout << state->slowStart << ", " <<  rlInitialised << ", " << state->sRtt.dbl() << std::endl;
      if(state->slowStart){
         
-        if(rlInitialised && (state->sRtt.dbl() != 0)){
+        if(!rlInitialised && (state->sRtt.dbl() != 0.0)){
+            std::cout << "Initialising agent" << std::endl;
             initRLAgent();
             // Send the initial step size along
             cObject* simtime = new cSimTime(2*state->rttPropEstimator.getMin());
@@ -145,7 +147,6 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
 
 void RLRdpAlg::receivedData(unsigned int seqNum, bool isMarked)
 {
-
     // ----- On RECEIVER: received data packet
     conn->sendAckRdp(seqNum);
     state->numberReceivedPackets++;
