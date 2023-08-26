@@ -14,6 +14,8 @@ from collections import deque
 from ray.tune.registry import get_trainable_cls
 import sys
 from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.algorithms.ddpg import DDPGConfig
+from ray.rllib.algorithms.sac import SACConfig
 
 
 from ray.tune.registry import register_env
@@ -136,10 +138,16 @@ if __name__ == "__main__":
                                 
     }
 
-    config = (PPOConfig()
+    if alg == 'PPO':
+        config_constructor = PPOConfig
+    elif alg == 'DDPG':
+        config_constructor = DDPGConfig
+    elif alg == 'SAC':
+        config_constructor = SACConfig
+
+    config = (config_constructor()
     .debugging(seed=seed)
-    .training(gamma=alg)
-    .rollouts(num_rollout_workers=2)
+    .rollouts(num_rollout_workers=7)
     .resources(num_gpus=0)
     .environment("OmnetppEnv", env_config=env_config)
     .evaluation(evaluation_config=evaluation_config)
@@ -157,10 +165,10 @@ if __name__ == "__main__":
     # agent.restore(checkpoint_path + checkpoint_file)
 
     tuner = tune.Tuner(
-        "PPO",
+        alg,
         
         run_config=air.RunConfig(stop={"timesteps_total": 1000000}, 
-                                 name=f"PPOgamma_{alg}_{seed}",
+                                 name=f"{alg}_{seed}",
                                  checkpoint_config=air.CheckpointConfig(checkpoint_frequency=100,
                                                                         checkpoint_at_end=True
                                                                         ),
