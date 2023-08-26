@@ -12,8 +12,8 @@ def run_training_test(exp):
 
 if __name__ == '__main__':
     EXPS_PARAMS = [
-        [0, 0.2, 0.4, 0.6, 0.8, 1],
-        [1,10]
+        ['PPO', 'DDPG', 'SAC'],
+        [1,10,100]
         ]
     EXPS = []
     for element in itertools.product(*EXPS_PARAMS):
