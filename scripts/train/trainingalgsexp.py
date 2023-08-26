@@ -5,7 +5,7 @@ import os
 import itertools
 
 def run_training(exp):
-    os.system(f"python3 train_single_agent_single_network.py {exp[0]} {exp[1]}") 
+    os.system(f"python train_single_agent_single_network.py {exp[0]} {exp[1]}") 
 
 def run_training_test(exp):
     print(f"{exp[0]} {exp[1]}")

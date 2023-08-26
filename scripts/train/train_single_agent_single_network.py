@@ -153,7 +153,7 @@ if __name__ == "__main__":
     .evaluation(evaluation_config=evaluation_config)
      ) # "ns3-v0")
 
-    ray.init(num_gpus=0, object_store_memory=1000000000, ignore_reinit_error=True)
+    ray.init(address='auto',num_gpus=0, object_store_memory=1000000000, ignore_reinit_error=True)
     
     # # Create the Trainer from config.
     # cls = get_trainable_cls("SAC")
