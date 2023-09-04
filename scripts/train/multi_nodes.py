@@ -13,7 +13,7 @@ import os
 from collections import deque
 from ray.tune.registry import get_trainable_cls
 import sys
-from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.algorithms.ppo.ppo import PPOConfig
 from ray.rllib.algorithms.ddpg import DDPGConfig
 from ray.rllib.algorithms.sac import SACConfig
 
@@ -123,7 +123,7 @@ register_env("OmnetppEnv", OmnetGymApienv_creator)
 
 if __name__ == "__main__":
     
-    alg = sys.argv[1]
+    nodes = int(sys.argv[1])
     seed = int(sys.argv[2])
 
     env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
@@ -138,6 +138,7 @@ if __name__ == "__main__":
                                 
     }
 
+    alg = 'PPO'
     if alg == 'PPO':
         config_constructor = PPOConfig
     elif alg == 'DDPG':
@@ -147,7 +148,7 @@ if __name__ == "__main__":
 
     config = (config_constructor()
     .debugging(seed=seed)
-    .rollouts(num_rollout_workers=7)
+    .rollouts(num_rollout_workers=nodes*8-1)
     .resources(num_gpus=0)
     .environment("OmnetppEnv", env_config=env_config)
     .evaluation(evaluation_config=evaluation_config)
@@ -168,7 +169,7 @@ if __name__ == "__main__":
         alg,
         
         run_config=air.RunConfig(stop={"timesteps_total": 1000000}, 
-                                 name=f"{alg}_{seed}",
+                                 name=f"nodes_{nodes}_{seed}",
                                  checkpoint_config=air.CheckpointConfig(checkpoint_frequency=100,
                                                                         checkpoint_at_end=True
                                                                         ),
