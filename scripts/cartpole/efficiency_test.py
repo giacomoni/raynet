@@ -187,7 +187,7 @@ class TestEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         super().reset(seed=seed)
         # Note that if you use custom reset bounds, it may lead to out-of-bound
         # state/observations.
-        low, high = (-0.5, 0.5)
+        low,high = (-np.finfo(np.float32).max, np.finfo(np.float32).max)
         self.state = self.np_random.uniform(low=low, high=high, size=(4,))
         self.steps_beyond_terminated = None
         self.steps = 0
