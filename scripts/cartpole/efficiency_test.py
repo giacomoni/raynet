@@ -322,7 +322,6 @@ if __name__ == "__main__":
     env_config={}
     algo = (
     DQNConfig()
-    .training(horizon=50000000000)
     .rollouts(num_rollout_workers=1)
     .resources(num_gpus=0)
     .environment("CartPole-v1", env_config={"max_episode_steps": 5000000000000}) # "ns3-v0"
