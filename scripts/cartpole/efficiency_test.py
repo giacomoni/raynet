@@ -110,9 +110,9 @@ class TestEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         # is still within bounds.
         high = np.array(
             [
-                np.finfo(np.float32).max,,
                 np.finfo(np.float32).max,
-                np.finfo(np.float32).max,,
+                np.finfo(np.float32).max,
+                np.finfo(np.float32).max,
                 np.finfo(np.float32).max,
             ],
             dtype=np.float32,
