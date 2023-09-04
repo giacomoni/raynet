@@ -11,7 +11,7 @@ import random
 import sys
 import os
 import math
-from ray.rllib.algorithms.dqn import DQNConfig
+from ray.rllib.algorithms.dqn.dqn import DQNConfig
 from ns3gym import ns3env
 import time
 
