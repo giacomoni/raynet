@@ -130,11 +130,14 @@ class TestEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         self.isopen = True
         self.state = None
         self.steps = 0
+        self.horizon = 500
+
 
         self.steps_beyond_terminated = None
 
     def step(self, action):
-        self.ste +=1
+        self.step +=1
+        print(self.step)
         err_msg = f"{action!r} ({type(action)}) invalid"
         assert self.action_space.contains(action), err_msg
         assert self.state is not None, "Call reset before using step method."
