@@ -18,7 +18,7 @@ typedef float ActionType;
 #endif
 
 #ifdef CARTPOLE
-typedef std::array<double, 4> ObsType;
+typedef std::array<double, 50> ObsType;
 typedef int RewardType;
 typedef int ActionType;
 #endif

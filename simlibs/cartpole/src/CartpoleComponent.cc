@@ -124,7 +124,14 @@ void CartpoleComponent::step(ActionType action)
         theta = theta + tau * theta_dot;
     }
 
-    state = {x, x_dot, theta, theta_dot};
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dist(-0.05, 0.05);
+
+    for (int n = 0; n < 50; ++n) {
+        state[n]=dist(e2);
+    }
+    // state = {x, x_dot, theta, theta_dot};
 
 }
 
