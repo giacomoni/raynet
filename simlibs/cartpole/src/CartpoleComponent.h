@@ -58,7 +58,7 @@ public:
     ActionType action[2] = {0, 1};
 
     int steps_beyond_done;
-
+    int steps;
     ObsType state; // array declared
 
     cMessage* initMsg; // Msg used to notify end of step

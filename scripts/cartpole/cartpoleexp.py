@@ -102,9 +102,8 @@ if __name__ == '__main__':
     np.random.seed(seed)
 
     ray.init(num_cpus=64)
-    
-    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
-
+    #env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
+    env_config={}
     algo = (
     DQNConfig()
     .rollouts(num_rollout_workers=num_workers)
@@ -115,11 +114,11 @@ if __name__ == '__main__':
 
     t_start = time.time()
     now = time.time()
-    while (now - t_start) <= 2000:
+    while True:
         print(f"Total elpsed: {(now - t_start)}")
         result = algo.train()
-        print(result['episode_reward_mean'])
-        if result['episode_reward_mean'] >= 450:
+        print(result['num_env_steps_sampled'])
+        if result['num_env_steps_sampled'] >= 100000:
             break
         now = time.time()
 
