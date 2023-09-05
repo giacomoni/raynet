@@ -53,7 +53,7 @@ public:
     double theta_threshold_radians;
     double x_threshold;
 
-    double high[4];
+    double high[50];
 
     ActionType action[2] = {0, 1};
 
