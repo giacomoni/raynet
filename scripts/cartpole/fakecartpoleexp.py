@@ -24,15 +24,15 @@ class OmnetGymApiEnv(gym.Env):
         self.env_config = env_config
         self.max_episode_len = 500
 
-        
-        high = np.array(
-            [
-                2.4 * 2,
-                np.finfo(np.float32).max,
-                (12 * 2 * math.pi / 360) * 2,
-                np.finfo(np.float32).max,],
-            dtype=np.float64,)
-        self.observation_space = spaces.Box(-high, high, dtype=np.float64)
+        high = np.ones(50,dtype=np.float32)* np.finfo(np.float32).max
+        # high = np.array(
+        #     [
+        #         2.4 * 2,
+        #         np.finfo(np.float32).max,
+        #         (12 * 2 * math.pi / 360) * 2,
+        #         np.finfo(np.float32).max,],
+        #     dtype=np.float32,)
+        self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
        
     def reset(self, *, seed=None, options=None):
@@ -102,8 +102,8 @@ if __name__ == '__main__':
     np.random.seed(seed)
 
     ray.init(num_cpus=64)
-    #env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
-    env_config={}
+    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
+    # env_config={}
     algo = (
     DQNConfig()
     .rollouts(num_rollout_workers=num_workers)
