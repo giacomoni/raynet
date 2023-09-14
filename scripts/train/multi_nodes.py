@@ -138,7 +138,7 @@ if __name__ == "__main__":
                                 
     }
 
-    alg = 'PPO'
+    alg = 'APEX_DDPG'
     if alg == 'PPO':
         config_constructor = PPOConfig
     elif alg == 'APEX_DDPG':
@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     config = (config_constructor()
     .debugging(seed=seed)
-    .rollouts(num_rollout_workers=nodes*8-1)
+    .rollouts(num_rollout_workers=nodes*8-5)
     .resources(num_gpus=0)
     .environment("OmnetppEnv", env_config=env_config)
     .evaluation(evaluation_config=evaluation_config)
