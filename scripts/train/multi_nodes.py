@@ -15,6 +15,8 @@ from ray.tune.registry import get_trainable_cls
 import sys
 from ray.rllib.algorithms.ppo.ppo import PPOConfig
 from ray.rllib.algorithms.apex_ddpg.apex_ddpg import ApexDDPGConfig
+from ray.rllib.algorithms.apex_dqn.apex_dqn import ApexDQNConfig
+
 from ray.rllib.algorithms.sac import SACConfig
 
 
@@ -121,10 +123,13 @@ def OmnetGymApienv_creator(env_config):
 register_env("OmnetppEnv", OmnetGymApienv_creator)
 
 
-if __name__ == "__main__":
+    
+
+def run_training(env, nodes, seed):
     
     nodes = int(sys.argv[1])
     seed = int(sys.argv[2])
+    env= sys.argv[3]
 
     env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
                        "linkrate_range": [64,128],
@@ -138,19 +143,25 @@ if __name__ == "__main__":
                                 
     }
 
-    alg = 'APEX_DDPG'
+    if env == "OmnetppEnv":
+        alg = "APEX_DDPG"
+    elif env == "CartPole-v1":
+        alg = "APEX_DQN"
+
     if alg == 'PPO':
         config_constructor = PPOConfig
     elif alg == 'APEX_DDPG':
         config_constructor = ApexDDPGConfig
     elif alg == 'SAC':
         config_constructor = SACConfig
+    elif alg == 'APEX_DQN':
+        config_constructor = ApexDQNConfig
 
     config = (config_constructor()
     .debugging(seed=seed)
     .rollouts(num_rollout_workers=nodes*8-5)
     .resources(num_gpus=0)
-    .environment("OmnetppEnv", env_config=env_config)
+    .environment(env, env_config=env_config if env == 'OmnetppEnv' else {})
     .evaluation(evaluation_config=evaluation_config)
      ) # "ns3-v0")
 
@@ -168,10 +179,9 @@ if __name__ == "__main__":
     tuner = tune.Tuner(
         alg,
         
-        run_config=air.RunConfig(stop={"timesteps_total": 200000}, 
-                                 name=f"nodes_{nodes}_{seed}",
-                                 checkpoint_config=air.CheckpointConfig(checkpoint_frequency=100,
-                                                                        checkpoint_at_end=True
+        run_config=air.RunConfig(stop={"timesteps_total": 500000}, 
+                                 name=f"{env}_{nodes}_{seed}",
+                                 checkpoint_config=air.CheckpointConfig(checkpoint_at_end=False
                                                                         ),
                         ),
         param_space=config
@@ -182,3 +192,8 @@ if __name__ == "__main__":
 
 
 
+
+if __name__ == "__main__":
+
+    for env in ['OmnetppEnv', 'CartPole-v1']:
+        run_training(env,6,10)
