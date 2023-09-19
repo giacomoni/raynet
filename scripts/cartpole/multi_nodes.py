@@ -102,8 +102,8 @@ if __name__ == '__main__':
     np.random.seed(seed)
 
     ray.init(address='auto')
-    #env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
-    env_config={}
+    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
+    # env_config={}
     algo = (
     DQNConfig()
     .rollouts(num_rollout_workers=nodes*8-1)
