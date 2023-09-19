@@ -123,5 +123,3 @@ if __name__ == '__main__':
         now = time.time()
 
     ray.shutdown()
-
-
