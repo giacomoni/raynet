@@ -29,14 +29,9 @@ void CartpoleComponent::initialize()
 
     // Angle limit set to 2 * theta_threshold_radians so failing observation
     // is still within bounds.
-    // high[0] = x_threshold * 2;
-    // high[1] = 3.4028235e+38;
-    // high[2] = theta_threshold_radians * 2;
-    // high[3] = 3.4028235e+38;
-
-    high[0] = 3.4028235e+38;
+    high[0] = x_threshold * 2;
     high[1] = 3.4028235e+38;
-    high[2] = 3.4028235e+38;
+    high[2] = theta_threshold_radians * 2;
     high[3] = 3.4028235e+38;
 
     steps_beyond_done = -10;
@@ -81,7 +76,7 @@ ObsType CartpoleComponent::random()
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dis(-0.05, 0.05);
     ObsType values;
-    for (int n = 0; n < 50; ++n)
+    for (int n = 0; n < 4; ++n)
         values[n] = dis(gen);
     return values;
 }
@@ -129,14 +124,7 @@ void CartpoleComponent::step(ActionType action)
         theta = theta + tau * theta_dot;
     }
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dist(-0.05, 0.05);
-
-    for (int n = 0; n < 50; ++n) {
-        state[n]=dist(gen);
-    }
-    // state = {x, x_dot, theta, theta_dot};
+    state = {x, x_dot, theta, theta_dot};
 
 }
 
