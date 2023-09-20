@@ -93,7 +93,7 @@ register_env("OmnetGymApiEnv", omnetgymapienv_creator)
 
 if __name__ == '__main__':
 
-    env = 'OmnetGymApiEnv'
+    env = 'CartPole-v1'
     nodes = 2
     seed = 10
 
@@ -102,13 +102,13 @@ if __name__ == '__main__':
     np.random.seed(seed)
 
     ray.init(address='auto')
-    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
-    # env_config={}
+    # env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
+    env_config={}
     algo = (
     DQNConfig()
     .rollouts(num_rollout_workers=nodes*8-1)
     .resources(num_gpus=0)
-    .environment(env, env_config=env_config) # "ns3-v0"
+    .environment(env, env_config=env_config)
     .build()
 )
 
