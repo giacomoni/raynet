@@ -80,3 +80,8 @@ The last step consists in setting up the python environment, with required packa
 ### Set up training environment
 
 Check the _Manual.pdf_ in the documentation for details on how to set up the training for your learning agents. 
+
+
+
+[![DOI](https://zenodo.org/badge/561974777.svg)](https://zenodo.org/badge/latestdoi/561974777)
+
