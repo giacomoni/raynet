@@ -1,6 +1,6 @@
 from build.omnetbind import OmnetGymApi
 from nnmodels import KerasBatchNormModel
-import gym
+import gymnasium as gym
 from gym import spaces, logger
 import numpy as np
 import math
