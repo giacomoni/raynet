@@ -15,37 +15,43 @@
 
 import inet.common.INETDefs;
 import inet.transportlayer.tcp_common.TcpHeader;
-import inet.transportlayer.tcp.flavours.TcpCubicState;
+import inet.transportlayer.tcp.flavours.TcpTahoeRenoFamilyState;
+
+
+
+
+cplusplus {{
+#include <common/utils/Estimator.h>
+}}
+
+class Estimator
+{
+   @existingClass;
+   //FIXME tostring, ...
+}
 
 namespace inet::tcp;
 
 
-struct OrcaStateVariables extends TcpCubicStateVariables
+
+///
+/// State variables for TcpTahoeRenoFamily.
+///
+struct RLTcpAlphaBetaStateVariables extends TcpTahoeRenoFamilyStateVariables
 {
    @descriptor(readonly);
+   
+   double alpha = 1;
+   double beta = 0.5;
 
-uint64_t  avg_thr_raw = 0; 
-uint64_t	avg_thr = 0;		
-uint32_t	thr_cnt = 0;		
-uint64_t  max_bw = 0;
-simtime_t last_ack_arrival = 0;
-uint64_t	pacing_rate = 0;
-uint64_t	max_pacing_rate = 4294967295;
-uint32_t  pre_lost_bytes = 0; 
-uint32_t	lost_bytes = 0;			
-uint32_t  orca_cnt = 0;		
-uint32_t  min_rtt = 0;	
-uint32_t  avg_urtt = 0;		
-simtime_t last_mi_t = 0;
+   simtime_t last_ack_received = 0;
+   uint64_t segments_lost = 0;
+   uint64_t segments_lost_old = 0;
 
-double delay_margin_coef = 1.25;
+   Estimator bandwidthEstimator;
+   Estimator rttEstimator;
+
 
 };
-
-cplusplus(OrcaStateVariables) {{
-  public:
-    virtual std::string str() const override;
-    virtual std::string detailedInfo() const override;
-}}
 
 

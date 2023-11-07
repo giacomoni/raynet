@@ -12,6 +12,7 @@ CartpoleComponent::~CartpoleComponent(){
 
 void CartpoleComponent::initialize()
 {
+    steps=0;	
     gravity = 9.8;
     masscart = 1.0;
     masspole = 0.1;
@@ -87,7 +88,7 @@ void CartpoleComponent::step(ActionType action)
     double theta = state[2];
     double theta_dot = state[3];
     double force;
-
+    steps++;
     if (action == 1)
     {
         force = force_mag;
@@ -171,7 +172,7 @@ RewardType CartpoleComponent::getReward(){
 bool CartpoleComponent::getDone(){
     bool done = false;
 
-    if (state[0] < x_threshold * -1 || state[0] > x_threshold || state[2] < theta_threshold_radians * -1 || state[2] > theta_threshold_radians)
+    if (steps>= 500 || state[0] < x_threshold * -1 || state[0] > x_threshold || state[2] < theta_threshold_radians * -1 || state[2] > theta_threshold_radians)
     {
         done = true;
     }

@@ -13,9 +13,6 @@ Register_Class(RLRdpAlg);
 simsignal_t RLRdpAlg::cwndSignal = cComponent::registerSignal("cwnd");    // will record changes to snd_cwnd
 simsignal_t RLRdpAlg::ssthreshSignal = cComponent::registerSignal("ssthresh");    // will record changes to ssthresh
 
-  RLRdpAlgStateVariables::~RLRdpAlgStateVariables(){}
-   std::string RLRdpAlgStateVariables::str() const {}
-    std::string RLRdpAlgStateVariables::detailedInfo() const{}
 
 RLRdpAlg::RLRdpAlg() :
         RdpAlgorithm(), state((RLRdpAlgStateVariables*&) RdpAlgorithm::state)
@@ -128,7 +125,7 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
 
      if(state->slowStart){
         
-        if(rlInitialised && (state->sRtt.dbl() != 0)){
+        if(!rlInitialised && (state->sRtt.dbl() != 0.0)){
             initRLAgent();
             // Send the initial step size along
             cObject* simtime = new cSimTime(2*state->rttPropEstimator.getMin());
@@ -148,7 +145,6 @@ void RLRdpAlg::receivedHeader(unsigned int seqNum)
 
 void RLRdpAlg::receivedData(unsigned int seqNum, bool isMarked)
 {
-
     // ----- On RECEIVER: received data packet
     conn->sendAckRdp(seqNum);
     state->numberReceivedPackets++;

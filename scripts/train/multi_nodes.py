@@ -1,50 +1,58 @@
-from build.omnetbind import OmnetGymApi
-from nnmodels import KerasBatchNormModel
+from build.omnetbind import OmnetGymApi 
 import gymnasium as gym
 from gymnasium import spaces, logger
 import numpy as np
-import math
-from ray.tune.registry import register_env
-from ray.rllib.algorithms.td3 import TD3Config
-import ray
 import pandas as pd
+import random
+import ray
+import math
+from ray import tune, air
+import copy
+import nnmodels
 import os
 from collections import deque
-import time
+from ray.tune.registry import get_trainable_cls
+import sys
+from ray.rllib.algorithms.ppo.ppo import PPOConfig
+from ray.rllib.algorithms.apex_ddpg.apex_ddpg import ApexDDPGConfig
+from ray.rllib.algorithms.apex_dqn.apex_dqn import ApexDQNConfig
+
+from ray.rllib.algorithms.sac import SACConfig
 
 
-# ModelCatalog.register_custom_model("bn_model",KerasBatchNormModel)
+from ray.tune.registry import register_env
 
 def uniform(low=0, high=1):
     return np.random.uniform(low, high)
 
+def lognuniform(low=0, high=1, size=None, base=np.e):
+    return np.power(base, np.random.uniform(low, high, size))
+
 class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
+        self.spec = gym.envs.registration.EnvSpec(id="OmnetppEnv", entry_point=self.__init__,max_episode_steps=400)
+        self.max_episode_steps=400
         self.env_config = env_config
         self.stacking = env_config['stacking']
         self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
         self.obs_min = np.tile(np.array([-1000000000,  
                                  -1000000000,   
                                  -1000000000,   
-                                 -1000000000,
-                                 -1000000000,
-                                 -1000000000,
                                  -1000000000], dtype=np.float32), self.stacking)
 
         self.obs_max = np.tile(np.array([10000000000, 
                                  10000000000, 
                                  10000000000, 
-                                 10000000000,
-                                 10000000000,
-                                 10000000000,
                                  10000000000],dtype=np.float32), self.stacking)
         self.currentRecord = None
         self.observation_space = spaces.Box(low=self.obs_min, high=self.obs_max, dtype=np.float32)
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
-    
-    def reset(self, *, seed=None, options=None):
+        self.steps = 0
+        
+    def  reset(self, *, seed=None, options=None):
+        self.steps = 0
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -71,27 +79,30 @@ class OmnetGymApiEnv(gym.Env):
 
         self.runner.initialise(worker_ini_file)
         obs = self.runner.reset()
+        # obs = np.asarray(obs['5'], dtype=np.float32)
         if len(obs.keys()) > 1:
             print(f"************ ERROR: expected only 1 flow, but {len(obs.keys())} were found.") 
         self.agentId = list(obs.keys())[0]
         obs = obs[self.agentId]
-        self.currentRecord = obs
-        self.obs.extend(obs)
+        self.currentRecord = obs[-13:]
+        self.obs.extend(obs[:-13])
         obs = np.asarray(list(self.obs),dtype=np.float32)
         return obs, {}
 
     def step(self, action):
-
-        action = 2**action
-
+        self.steps += 1
+        print(self.steps)
         actions = {self.agentId: action}
 
         if math.isnan(action):
             print("====================================== action passed is nan =========================================")
-        obs, rewards, dones, info_= self.runner.step(actions)
+        obs, rewards, dones, info = self.runner.step(actions)
         if dones[self.agentId]:
              self.runner.shutdown()
              self.runner.cleanup()
+        
+        if  self.steps >= self.max_episode_steps:
+             dones[self.agentId] = True
 
         if math.isnan(rewards[self.agentId]):
             print("====================================== reward returned is nan =========================================")
@@ -101,41 +112,88 @@ class OmnetGymApiEnv(gym.Env):
         
 
         obs = obs[self.agentId]
-        self.currentRecord = obs
-        self.obs.extend(obs)
+        self.currentRecord = obs[-13:]
+        self.obs.extend(obs[:-13])
         obs = np.asarray(list(self.obs),dtype=np.float32)
-
-        if info_['simDone']:
-             dones[self.agentId] = True
-        return  obs, reward, dones[self.agentId],False, {}
-
+        return  obs, reward, dones[self.agentId], False, {}
 
 def OmnetGymApienv_creator(env_config):
     return OmnetGymApiEnv(env_config)  # return an env instance
 
 register_env("OmnetppEnv", OmnetGymApienv_creator)
 
-env_config={"iniPath": os.getenv('HOME') + "/raynet/configs/orca/orcaConfigStatic.ini",
-          "stacking": 10,
-          "linkrate_range": [64,64],
-          "rtt_range": [16, 16],
-          "buffer_range": [250, 250],}
 
-algo = (
-    TD3Config()
-    .rollouts(num_rollout_workers=2)
+    
+
+def run_training(env, nodes, seed):
+    
+    nodes = int(sys.argv[1])
+    seed = int(sys.argv[2])
+    env= sys.argv[3]
+
+    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
+                       "linkrate_range": [64,128],
+                       "rtt_range": [16, 64],
+                       "buffer_range": [80, 800],
+                       "stacking": 10}
+
+    evaluation_config =  {
+                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini", "stacking": 10},
+                                "explore": False,
+                                
+    }
+
+    if env == "OmnetppEnv":
+        alg = "APEX_DDPG"
+    elif env == "CartPole-v1":
+        alg = "APEX_DQN"
+
+    if alg == 'PPO':
+        config_constructor = PPOConfig
+    elif alg == 'APEX_DDPG':
+        config_constructor = ApexDDPGConfig
+    elif alg == 'SAC':
+        config_constructor = SACConfig
+    elif alg == 'APEX_DQN':
+        config_constructor = ApexDQNConfig
+
+    config = (config_constructor()
+    .debugging(seed=seed)
+    .rollouts(num_rollout_workers=nodes*8-5)
     .resources(num_gpus=0)
-    .environment("OmnetppEnv", env_config=env_config) # "ns3-v0"
-    .build())
+    .environment(env, env_config=env_config if env == 'OmnetppEnv' else {})
+    .evaluation(evaluation_config=evaluation_config)
+     ) # "ns3-v0")
 
-while True:
-    result = algo.train()
-    print(result['num_env_steps_sampled'])
-    if result['num_env_steps_sampled'] >= 1000000:
-            break
-    now = time.time()
+    ray.init(address='auto')
+    
+    # # Create the Trainer from config.
+    # cls = get_trainable_cls("SAC")
+    # env = OmnetGymApienv_creator(config['env_config'])
+    # agent = cls(env="OmnetppEnv", config=config)
 
-    ray.shutdown()
-# analysis = ray.tune.run(
-#     "TD3", name="orca",stop={"training_iteration": 200000}, config=config, checkpoint_freq=50)
+    # checkpoint_path = f"/its/home/lg317/ray_results/explicitstate5/SAC_OmnetppEnv_4700e_00000_0_2022-07-05_16-51-05/checkpoint_009000"
+    # checkpoint_file = f"/checkpoint-9000" 
+    # agent.restore(checkpoint_path + checkpoint_file)
 
+    tuner = tune.Tuner(
+        alg,
+        
+        run_config=air.RunConfig(stop={"timesteps_total": 500000}, 
+                                 name=f"{env}_{nodes}_{seed}",
+                                 checkpoint_config=air.CheckpointConfig(checkpoint_at_end=False
+                                                                        ),
+                        ),
+        param_space=config
+        
+    )
+
+    tuner.fit()
+
+
+
+
+if __name__ == "__main__":
+
+    for env in ['OmnetppEnv', 'CartPole-v1']:
+        run_training(env,6,10)

@@ -98,11 +98,6 @@ public:
     tuple<array<double, 4>, int, int, string> getStepReturns(); //returns a tuple containg the obs, reward and done at the end of a step(MI)
 
 
-
-
-
-    
-
 };
 
 } //namespace learning

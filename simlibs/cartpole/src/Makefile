@@ -63,7 +63,7 @@ ifneq ($(PLATFORM),win32)
 LIBS += -Wl,-rpath,$(abspath /its/home/lg317/raynet/simlibs/RLComponents/src)
 endif
 
-COPTS = $(CFLAGS) $(IMPORT_DEFINES) -DORCA $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS = $(CFLAGS) $(IMPORT_DEFINES) -DCARTPOLE $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH)
 SMCOPTS =
 

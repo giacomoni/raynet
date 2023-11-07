@@ -1,18 +1,21 @@
 from build.omnetbind import OmnetGymApi 
-import gym
-from gym import spaces, logger
+import gymnasium as gym
+from gymnasium import spaces, logger
 import numpy as np
 import pandas as pd
 import random
 import ray
 import math
-from ray import tune
+from ray import tune, air
 import copy
 import nnmodels
 import os
 from collections import deque
 from ray.tune.registry import get_trainable_cls
 import sys
+from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.algorithms.ddpg import DDPGConfig
+from ray.rllib.algorithms.sac import SACConfig
 
 
 from ray.tune.registry import register_env
@@ -25,6 +28,8 @@ def lognuniform(low=0, high=1, size=None, base=np.e):
 
 class OmnetGymApiEnv(gym.Env):
     def __init__(self, env_config):
+        self.spec = gym.envs.registration.EnvSpec(id="OmnetppEnv", entry_point=self.__init__,max_episode_steps=400)
+        self.max_episode_steps=400
         self.env_config = env_config
         self.stacking = env_config['stacking']
         self.action_space = spaces.Box(low=np.array([-2.0], dtype=np.float32), high=np.array([2.0], dtype=np.float32), dtype=np.float32)
@@ -42,7 +47,10 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
-    def reset(self):
+        self.steps = 0
+        
+    def  reset(self, *, seed=None, options=None):
+        self.steps = 0
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -77,17 +85,22 @@ class OmnetGymApiEnv(gym.Env):
         self.currentRecord = obs[-13:]
         self.obs.extend(obs[:-13])
         obs = np.asarray(list(self.obs),dtype=np.float32)
-        return obs
+        return obs, {}
 
     def step(self, action):
+        self.steps += 1
+        print(self.steps)
         actions = {self.agentId: action}
 
         if math.isnan(action):
             print("====================================== action passed is nan =========================================")
-        obs, rewards, dones = self.runner.step(actions)
+        obs, rewards, dones, info = self.runner.step(actions)
         if dones[self.agentId]:
              self.runner.shutdown()
              self.runner.cleanup()
+        
+        if  self.steps >= self.max_episode_steps:
+             dones[self.agentId] = True
 
         if math.isnan(rewards[self.agentId]):
             print("====================================== reward returned is nan =========================================")
@@ -100,8 +113,7 @@ class OmnetGymApiEnv(gym.Env):
         self.currentRecord = obs[-13:]
         self.obs.extend(obs[:-13])
         obs = np.asarray(list(self.obs),dtype=np.float32)
-        return  obs, reward, dones[self.agentId], {}
-
+        return  obs, reward, dones[self.agentId], False, {}
 
 def OmnetGymApienv_creator(env_config):
     return OmnetGymApiEnv(env_config)  # return an env instance
@@ -111,31 +123,37 @@ register_env("OmnetppEnv", OmnetGymApienv_creator)
 
 if __name__ == "__main__":
     
-    alg = float(sys.argv[1])
+    alg = sys.argv[1]
     seed = int(sys.argv[2])
 
-    config = {
-        "env": "OmnetppEnv",
-        "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
+    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini",
                        "linkrate_range": [64,128],
                        "rtt_range": [16, 64],
                        "buffer_range": [80, 800],
-                       "stacking": 10},
-        "evaluation_config": {
-                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini"},
+                       "stacking": 10}
+
+    evaluation_config =  {
+                                "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/ndpconfig_single_flow_train_with_delay.ini", "stacking": 10},
                                 "explore": False,
-                                "stacking": 10
+                                
+    }
 
-        },
-     "num_workers": 5,
-     "horizon": 400,
-     "no_done_at_end":True,
-     "soft_horizon":False,
-     "gamma": alg,
-     "seed": seed     
-     }
+    if alg == 'PPO':
+        config_constructor = PPOConfig
+    elif alg == 'DDPG':
+        config_constructor = DDPGConfig
+    elif alg == 'SAC':
+        config_constructor = SACConfig
 
-    ray.init(num_cpus=32, num_gpus=0, object_store_memory=1000000000)
+    config = (config_constructor()
+    .debugging(seed=seed)
+    .rollouts(num_rollout_workers=7)
+    .resources(num_gpus=0)
+    .environment("OmnetppEnv", env_config=env_config)
+    .evaluation(evaluation_config=evaluation_config)
+     ) # "ns3-v0")
+
+    ray.init(address='auto')
     
     # # Create the Trainer from config.
     # cls = get_trainable_cls("SAC")
@@ -146,15 +164,20 @@ if __name__ == "__main__":
     # checkpoint_file = f"/checkpoint-9000" 
     # agent.restore(checkpoint_path + checkpoint_file)
 
-    tune.run(
-        "PPO",
-        name=f"PPOgamma_{alg}_{seed}",
-        stop={"timesteps_total": 1000000},
-        config=config,
-        checkpoint_freq=100,
-        checkpoint_at_end=True,
-        resume=False
+    tuner = tune.Tuner(
+        alg,
+        
+        run_config=air.RunConfig(stop={"timesteps_total": 1000000}, 
+                                 name=f"{alg}_{seed}",
+                                 checkpoint_config=air.CheckpointConfig(checkpoint_frequency=100,
+                                                                        checkpoint_at_end=True
+                                                                        ),
+                        ),
+        param_space=config
+        
     )
+
+    tuner.fit()
 
 
 
