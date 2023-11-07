@@ -1,7 +1,7 @@
 from build.omnetbind import OmnetGymApi
 from nnmodels import KerasBatchNormModel
 import gymnasium as gym
-from gym import spaces, logger
+from gymnasium import spaces, logger
 import numpy as np
 import math
 from ray.tune.registry import register_env
