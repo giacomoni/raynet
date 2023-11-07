@@ -5,12 +5,12 @@ from gym import spaces, logger
 import numpy as np
 import math
 from ray.tune.registry import register_env
-from ray.rllib.agents.ddpg.td3 import TD3Trainer
+from ray.rllib.algorithms.td3 import TD3Config
 import ray
 import pandas as pd
-from ray.rllib.models import ModelCatalog
 import os
 from collections import deque
+import time
 
 
 # ModelCatalog.register_custom_model("bn_model",KerasBatchNormModel)
@@ -43,7 +43,8 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
-    def reset(self):
+    
+    def reset(self, *, seed=None, options=None):
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         # Draw network parameters from space
         linkrate_range = self.env_config["linkrate_range"]
@@ -77,7 +78,7 @@ class OmnetGymApiEnv(gym.Env):
         self.currentRecord = obs
         self.obs.extend(obs)
         obs = np.asarray(list(self.obs),dtype=np.float32)
-        return obs
+        return obs, {}
 
     def step(self, action):
         action = 2**action
@@ -105,7 +106,7 @@ class OmnetGymApiEnv(gym.Env):
 
         if info_['simDone']:
              dones[self.agentId] = True
-        return  obs, reward, dones[self.agentId], {}
+        return  obs, reward, dones[self.agentId],False, {}
 
 
 def OmnetGymApienv_creator(env_config):
@@ -113,32 +114,28 @@ def OmnetGymApienv_creator(env_config):
 
 register_env("OmnetppEnv", OmnetGymApienv_creator)
 
-
-config = {"env": "OmnetppEnv",
-          "env_config": {"iniPath": os.getenv('HOME') + "/raynet/configs/orca/orcaConfigStatic.ini",
+env_config={"iniPath": os.getenv('HOME') + "/raynet/configs/orca/orcaConfigStatic.ini",
           "stacking": 10,
           "linkrate_range": [64,64],
           "rtt_range": [16, 16],
-          "buffer_range": [250, 250],},
+          "buffer_range": [250, 250],}
 
-          "num_workers": 2,
-          "horizon": 2000,
-          "no_done_at_end": True,
-          "soft_horizon": False,
-        #   "optimizer" : "Adam",
-        #   "lr":0.001,
-        #   "critic_lr": 0.001,
-        #   "actor_lr": 0.0001,
-        #    "exploration_config": {
-        #      "type": "GaussianNoise",
-        #      "stddev": 0.2
-        #     },
-        #   "train_batch_size":8096,
-          "gamma": 0.995,
-          "framework": 'tf',
-          }
+algo = (
+    TD3Config()
+    .rollouts(num_rollout_workers=2)
+    .resources(num_gpus=0)
+    .environment("OmnetppEnv", env_config=env_config) # "ns3-v0"
+    .build())
 
+while True:
+    print(f"Total elpsed: {(now - t_start)}")
+    result = algo.train()
+    print(result['num_env_steps_sampled'])
+    if result['num_env_steps_sampled'] >= 1000000:
+            break
+    now = time.time()
 
-analysis = ray.tune.run(
-    "TD3", name="orca",stop={"training_iteration": 200000}, config=config, checkpoint_freq=50)
+    ray.shutdown()
+# analysis = ray.tune.run(
+#     "TD3", name="orca",stop={"training_iteration": 200000}, config=config, checkpoint_freq=50)
 
