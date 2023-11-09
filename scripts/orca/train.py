@@ -72,7 +72,9 @@ class OmnetGymApiEnv(gym.Env):
             fout.write(ini_string)
 
         self.runner.initialise(worker_ini_file)
+        print("before")
         obs = self.runner.reset()
+        print("after")
         if len(obs.keys()) > 1:
             print(f"************ ERROR: expected only 1 flow, but {len(obs.keys())} were found.") 
         self.agentId = list(obs.keys())[0]
