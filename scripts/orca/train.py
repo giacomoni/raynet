@@ -85,6 +85,7 @@ class OmnetGymApiEnv(gym.Env):
 
     def step(self, action):
         self.steps += 1
+        print(self.steps)
         action = 2**action
 
         actions = {self.agentId: action}
