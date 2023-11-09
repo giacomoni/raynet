@@ -126,7 +126,7 @@ void Orca::receivedDataAck(uint32_t firstSeqAcked)
     // rate *= max(state->snd_cwnd, state->pipe);
     // rate /= (state->srtt.inUnit(SIMTIME_US) >> 3);
 
-    rate = 1024*(state->snd_cwnd / state->snd_mss)/(1024*state->srtt.dbl());
+    rate = 1024 * (state->snd_cwnd / state->snd_mss) / (1024 * state->srtt.dbl());
 
     state->pacing_rate = std::min(rate, state->max_pacing_rate);
 
@@ -198,81 +198,85 @@ void Orca::initRLAgent()
 }
 
 ObsType Orca::computeObservation()
-{   
+{
     // Step is valid if not in slow start and ack have been received in the MI and the connection
-    // is not in loss recovery state. 
+    // is not in loss recovery state.
     if (state->orca_cnt > 0)
     {
-        
-        if(state->snd_cwnd >= state->ssthresh){
-        double feature1, feature2, feature3, feature4, feature5, feature6, feature7;
 
-        double loss_rate = (double)(state->lost_bytes - state->pre_lost_bytes) / ((simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0);
-
-        if (state->max_bw > 0)
+        if (state->snd_cwnd >= state->ssthresh)
         {
-            feature1 = double(state->avg_thr) / double(state->max_bw);
-            feature2 = std::min(((double)state->pacing_rate * state->snd_mss)/ (double)state->max_bw, 10.0);
-            feature3 = 5.0 * loss_rate / (double)state->max_bw;
+            double feature1, feature2, feature3, feature4, feature5, feature6, feature7;
+
+            double loss_rate = (double)(state->lost_bytes - state->pre_lost_bytes) / ((simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0);
+
+            if (state->max_bw > 0)
+            {
+                feature1 = double(state->avg_thr) / double(state->max_bw);
+                feature2 = std::min(((double)state->pacing_rate * state->snd_mss) / (double)state->max_bw, 10.0);
+                feature3 = 5.0 * loss_rate / (double)state->max_bw;
+            }
+            else
+            {
+                feature1 = feature2 = feature3 = 0;
+            }
+
+            feature4 = (double)(state->orca_cnt) / (double)(state->snd_cwnd / state->snd_mss);
+            feature5 = (double)(simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0;
+            feature6 = (double)(state->min_rtt / 1000.0) / (double)(state->avg_urtt / 1000.0);
+
+            double delay_metric;
+
+            if ((state->min_rtt / 1000.0) * state->delay_margin_coef < (double)(state->avg_urtt) / 1000.0)
+                delay_metric = ((double)state->min_rtt / 1000.0) * state->delay_margin_coef / ((double)(state->avg_urtt) / 1000.0);
+            else
+                delay_metric = 1.0;
+
+            feature7 = delay_metric;
+
+            conn->emit(feature1Signal, feature1);
+            conn->emit(feature2Signal, feature2);
+            conn->emit(feature3Signal, feature3);
+            conn->emit(feature4Signal, feature4);
+            conn->emit(feature5Signal, feature5);
+            conn->emit(feature6Signal, feature6);
+            conn->emit(feature7Signal, feature7);
+
+            isValid = true;
+
+            std::cout << "throughput: " << feature1 << std::endl;
+            std::cout << "pacing: " << feature2 << std::endl;
+            std::cout << "lossrate: " << feature3 / 5.0 << std::endl;
+            std::cout << "orca_cnt: " << feature4 << std::endl;
+            std::cout << "mi_t: " << feature5 << std::endl;
+            std::cout << "minrtt/rtt: " << feature6 << std::endl;
+            std::cout << "delay metric: " << feature7 << std::endl
+                      << std::endl;
+
+            std::cout << "Case 1" << std::endl;
+            return {
+                feature1,
+                feature2,
+                feature3,
+                feature4,
+                feature5,
+                feature6,
+                feature7};
         }
         else
         {
-            feature1 = feature2 = feature3 = 0;
-        }
-
-        feature4 = (double)(state->orca_cnt) / (double)(state->snd_cwnd / state->snd_mss);
-        feature5 = (double)(simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0;
-        feature6 = (double)(state->min_rtt / 1000.0) / (double)(state->avg_urtt / 1000.0);
-
-        double delay_metric;
-
-        if ((state->min_rtt / 1000.0) * state->delay_margin_coef < (double)(state->avg_urtt) / 1000.0)
-            delay_metric = ((double)state->min_rtt / 1000.0) * state->delay_margin_coef / ((double)(state->avg_urtt) / 1000.0);
-        else
-            delay_metric = 1.0;
-
-        feature7 = delay_metric;
-
-        conn->emit(feature1Signal, feature1);
-        conn->emit(feature2Signal, feature2);
-        conn->emit(feature3Signal, feature3);
-        conn->emit(feature4Signal, feature4);
-        conn->emit(feature5Signal, feature5);
-        conn->emit(feature6Signal, feature6);
-        conn->emit(feature7Signal, feature7);
-
-        isValid = true;
-
-        std::cout << "throughput: " << feature1 << std::endl;
-        std::cout << "pacing: " << feature2 << std::endl;
-        std::cout << "lossrate: " << feature3/5.0 << std::endl;
-        std::cout << "orca_cnt: " << feature4 << std::endl;
-        std::cout << "mi_t: " << feature5 << std::endl;
-        std::cout << "minrtt/rtt: " << feature6 << std::endl;
-        std::cout << "delay metric: " << feature7 << std::endl << std::endl;
-
-        std::cout << "Case 1" << std::endl;
-        return {
-            feature1,
-            feature2,
-            feature3,
-            feature4,
-            feature5,
-            feature6,
-            feature7};
-
-        }else{
             std::cout << "Case 2" << std::endl;
-             // We increase the cwnd by 1.1x
-        double cwnd = state->snd_cwnd / state->snd_mss;
-        cwnd = (1100 * cwnd)/100;
-        state->snd_cwnd = cwnd * state->snd_mss;
-        state->last_mi_t = simTime();
-
+            // We increase the cwnd by 1.1x
+            double cwnd = state->snd_cwnd / state->snd_mss;
+            cwnd = (1100 * cwnd) / 100;
+            state->snd_cwnd = cwnd * state->snd_mss;
+            state->last_mi_t = simTime();
         }
     }
     else
-    {  std::cout << "Case 3" << std::endl;
+    {
+        std::cout << "Case 3" << std::endl;
+        std::cout << state->orca_cnt << std:endl;
 
         isValid = false;
         return {
@@ -287,7 +291,7 @@ ObsType Orca::computeObservation()
 }
 RewardType Orca::computeReward()
 {
-    if (state->orca_cnt > 0 &&  state->snd_cwnd >= state->ssthresh)
+    if (state->orca_cnt > 0 && state->snd_cwnd >= state->ssthresh)
     {
         double loss_rate = (double)(state->lost_bytes - state->pre_lost_bytes) / ((double)(simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0);
         double delay_metric;
@@ -319,15 +323,14 @@ void Orca::decisionMade(ActionType action)
 
         if (state->snd_cwnd < state->ssthresh)
         {
-
         }
         else
         {
             uint32_t target_ratio = ((action * 100) * cwnd) / 100;
             conn->emit(actionSignal, action);
             std::cout << "action: " << action << std::endl;
-            std::cout << "new window: " << std::max((uint32_t)target_ratio, 1U) << std::endl << std::endl;
-           
+            std::cout << "new window: " << std::max((uint32_t)target_ratio, 1U) << std::endl
+                      << std::endl;
 
             state->snd_cwnd = std::max(target_ratio * state->snd_mss, state->snd_mss);
         }
