@@ -203,7 +203,7 @@ ObsType Orca::computeObservation()
     // is not in loss recovery state. 
     if (state->orca_cnt > 0)
     {
-
+        
         if(state->snd_cwnd >= state->ssthresh){
         double feature1, feature2, feature3, feature4, feature5, feature6, feature7;
 
@@ -251,6 +251,7 @@ ObsType Orca::computeObservation()
         std::cout << "minrtt/rtt: " << feature6 << std::endl;
         std::cout << "delay metric: " << feature7 << std::endl << std::endl;
 
+        std::cout << "Case 1" << std::endl;
         return {
             feature1,
             feature2,
@@ -261,6 +262,7 @@ ObsType Orca::computeObservation()
             feature7};
 
         }else{
+            std::cout << "Case 2" << std::endl;
              // We increase the cwnd by 1.1x
         double cwnd = state->snd_cwnd / state->snd_mss;
         cwnd = (1100 * cwnd)/100;
@@ -270,7 +272,7 @@ ObsType Orca::computeObservation()
         }
     }
     else
-    {  
+    {  std::cout << "Case 3" << std::endl;
 
         isValid = false;
         return {
