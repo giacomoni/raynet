@@ -276,7 +276,7 @@ ObsType Orca::computeObservation()
     else
     {
         std::cout << "Case 3" << std::endl;
-        std::cout << state->orca_cnt << std:endl;
+        std::cout << state->orca_cnt << std::endl;
 
         isValid = false;
         return {
