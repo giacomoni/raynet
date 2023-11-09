@@ -265,12 +265,16 @@ ObsType Orca::computeObservation()
         }
         else
         {
-            std::cout << "Case 2" << std::endl;
+            std::cout << "Case 2_1" << std::endl;
             // We increase the cwnd by 1.1x
             double cwnd = state->snd_cwnd / state->snd_mss;
+            std::cout << "Case 2_2" << std::endl;
             cwnd = (1100 * cwnd) / 100;
+            std::cout << "Case 2_3" << std::endl;
             state->snd_cwnd = cwnd * state->snd_mss;
+            std::cout << "Case 2_4" << std::endl;
             state->last_mi_t = simTime();
+            std::cout << "Case 2_5" << std::endl;
         }
     }
     else
