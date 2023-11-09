@@ -80,6 +80,10 @@ void Orca::receivedDataAck(uint32_t firstSeqAcked)
 {
     TcpCubic::receivedDataAck(firstSeqAcked);
 
+    // Record the first time we exit slow start
+    if(state->snd_cwnd >= state->ssthresh)
+        state->has_ss_finished=true;
+
     uint64_t interval_us;
     //Update interarrival rate of ACKs
 
@@ -204,7 +208,7 @@ ObsType Orca::computeObservation()
     if (state->orca_cnt > 0)
     {
 
-        if (state->snd_cwnd >= state->ssthresh)
+        if (state->has_ss_finished)
         {
             double feature1, feature2, feature3, feature4, feature5, feature6, feature7;
 
@@ -299,7 +303,7 @@ ObsType Orca::computeObservation()
 }
 RewardType Orca::computeReward()
 {
-    if (state->orca_cnt > 0 && state->snd_cwnd >= state->ssthresh)
+    if (state->orca_cnt > 0 && state->has_ss_finished)
     {
         double loss_rate = (double)(state->lost_bytes - state->pre_lost_bytes) / ((double)(simTime().inUnit(SIMTIME_US) - state->last_mi_t.inUnit(SIMTIME_US)) / 1000000.0);
         double delay_metric;
@@ -329,7 +333,7 @@ void Orca::decisionMade(ActionType action)
     {
         uint32_t cwnd = state->snd_cwnd / state->snd_mss;
 
-        if (state->snd_cwnd < state->ssthresh)
+        if (!state->has_ss_finished)
         {
         }
         else

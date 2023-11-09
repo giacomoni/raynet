@@ -40,6 +40,8 @@ simtime_t last_mi_t = 0;
 
 double delay_margin_coef = 1.25;
 
+bool has_ss_finished = false;
+
 };
 
 cplusplus(OrcaStateVariables) {{
