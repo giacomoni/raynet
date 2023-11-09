@@ -43,6 +43,8 @@ class OmnetGymApiEnv(gym.Env):
         self.runner = OmnetGymApi()
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
         self.agentId = None
+        self.steps = 0
+        self.max_steps = 200
     
     def reset(self, *, seed=None, options=None):
         self.obs = deque(np.zeros(len(self.obs_min)),maxlen=len(self.obs_min))
@@ -78,10 +80,11 @@ class OmnetGymApiEnv(gym.Env):
         self.currentRecord = obs
         self.obs.extend(obs)
         obs = np.asarray(list(self.obs),dtype=np.float32)
+        self.steps = 0
         return obs, {}
 
     def step(self, action):
-
+        self.steps += 1
         action = 2**action
 
         actions = {self.agentId: action}
@@ -107,7 +110,12 @@ class OmnetGymApiEnv(gym.Env):
 
         if info_['simDone']:
              dones[self.agentId] = True
-        return  obs, reward, dones[self.agentId],False, {}
+
+        if self.steps >= self.max_steps:
+            truncated = True
+        else:
+            truncated = False
+        return  obs, reward, dones[self.agentId],truncated, {}
 
 
 def OmnetGymApienv_creator(env_config):
