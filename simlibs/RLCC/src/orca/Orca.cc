@@ -64,8 +64,10 @@ void Orca::established(bool active)
 {
     TcpCubic::established(active);
     //TODO: Move this to established()
+    std::cout << "Established" << std::endl;
     if (!rlInitialised)
     {
+        std::cout << "Init agent" << std::endl;
         initRLAgent();
         // Send the initial step size along
         cObject *simtime = new cSimTime(0.02);
