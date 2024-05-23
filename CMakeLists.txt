@@ -33,7 +33,7 @@ add_library(rlomnet SHARED ${PROJECT_SOURCE_DIR}/src/GymApi.cc)
 add_library(Cmdrlenv SHARED ${PROJECT_SOURCE_DIR}/src/Cmdrlenv.cc)
 
 if(CMAKE_BUILD_TYPE STREQUAL Release)
-    add_subdirectory(pybind11)
+    add_subdirectory(extern/pybind11)
 
 
     pybind11_add_module(omnetbind MODULE ${PROJECT_SOURCE_DIR}/src/GymApiBind.cc)
