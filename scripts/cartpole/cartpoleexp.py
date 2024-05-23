@@ -12,7 +12,7 @@ import sys
 import os
 import math
 from ray.rllib.algorithms.dqn.dqn import DQNConfig
-from ns3gym import ns3env
+#from ns3gym import ns3env
 import time
 
 
@@ -76,7 +76,7 @@ class OmnetGymApiEnv(gym.Env):
 def omnetgymapienv_creator(env_config):
     return OmnetGymApiEnv(env_config)  # return an env instance
 
-def ns3gymapienv_creator(env_config):
+#def ns3gymapienv_creator(env_config):
 
     port = 5555 + env_config.worker_index
     simTime = 500 # seconds
@@ -88,7 +88,7 @@ def ns3gymapienv_creator(env_config):
     startSim = 1
     return ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)  # return an env instance
 
-register_env("ns3-v0", ns3gymapienv_creator)
+#register_env("ns3-v0", ns3gymapienv_creator)
 register_env("OmnetGymApiEnv", omnetgymapienv_creator)
 
 if __name__ == '__main__':
@@ -102,8 +102,8 @@ if __name__ == '__main__':
     np.random.seed(seed)
 
     ray.init(num_cpus=64)
-    #env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
-    env_config={}
+    env_config = {"iniPath": os.getenv('HOME') + "/raynet/configs/cartpole/cartpole.ini"}
+#    env_config={}
     algo = (
     DQNConfig()
     .rollouts(num_rollout_workers=num_workers)
