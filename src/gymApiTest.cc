@@ -11,7 +11,7 @@ using namespace omnetpp;
 int main(int argc, char **argv){
 
     std::string HOME(getenv("HOME"));
-    std::string NEDPATH = "NEDPATH="+HOME + "/raynet/simulations;"+HOME+"/raynet/simlibs/RLComponents/src;"+HOME+"/raynet/simlibs/ecmp/src;"+HOME+"/raynet/simlibs/TcpPaced/src;"+HOME+"/raynet/simlibs/RLCC/src;"+HOME+"/raynet/simlibs/rdp/src;"+HOME+"/inet4.4/src/inet;"+HOME+"/inet4.4/examples";
+    std::string NEDPATH = "NEDPATH="+HOME + "/raynet/simulations;"+HOME+"/raynet/simlibs/RLComponents/src;"+HOME+"/raynet/simlibs/ecmp/src;"+HOME+"/raynet/simlibs/TcpPaced/src;"+HOME+"/raynet/simlibs/RLCC/src;"+HOME+"/raynet/simlibs/rdp/src;"+HOME+"/inet4.5/src/inet;"+HOME+"/inet4.5/examples";
 
     putenv(NEDPATH.c_str());
     // TODO: Initialise CmdRllibenv. This class will be bound to Python.
