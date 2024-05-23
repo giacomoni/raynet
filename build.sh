@@ -18,7 +18,7 @@ echo {"Usage: ${0##*/} [-h] [-m BUILDMODE] [-f FEATURE]...
    
    # Initialize our own variables:
    mode="release"
-   feature="RLRDP"
+   feature="CARTPOLE"
    
    OPTIND=1
    # Resetting OPTIND is necessary if getopts was used previously in the script.
@@ -49,9 +49,9 @@ then
 	exit 1 
 	fi
 
-if [ "$feature" != "RLRDP" ] && [ "$feature" != "CARTPOLE" ] && [ "$feature" != "ORCA" ]
+if [ "$feature" != "CARTPOLE" ] && [ "$feature" != "ORCA" ]
 then
-	echo "-f option value not recognised. Select among RLRDP, RLTCP, CARTPOLE "
+	echo "-f option value not recognised. Select among CARTPOLE or ORCA"
 	echo "Build failed."	
 	exit 1  
 	fi
@@ -73,11 +73,6 @@ then
 
 	# Build TcpPaced debug
 	cd $RAYNET_HOME/simlibs/TcpPaced && \
-	make makefilesdebug && \
-	make -j32 MODE=debug
-
-    # Build RLCC debug
-	cd $RAYNET_HOME/simlibs/RLCC && \
 	make makefilesdebug && \
 	make -j32 MODE=debug
 
@@ -105,11 +100,6 @@ then
 	make makefilesrelease && \
 	make -j32 MODE=release
 
-    # Build RLCC release
-	cd $RAYNET_HOME/simlibs/RLCC && \
-	make makefilesrelease && \
-	make -j32 MODE=release
-
 	# Build Cartpole release
 	cd $RAYNET_HOME/simlibs/cartpole && \
 	make makefilesrelease && \
@@ -132,5 +122,4 @@ then
 	cmake -DCMAKE_BUILD_TYPE=Release ../ && \
 	make -j32
 fi
-
 
