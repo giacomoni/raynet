@@ -23,7 +23,7 @@ _Custom Components_ refers to any simulation component that the user may need wh
 ## Dependencies
 
 The project has been tested on Ubuntu 20.04, with Omnet++ v5.6.2, pybind11 v2.7.1. Required dependencies are:
-- Omnet++ 5.6.2
+- Omnet++ 6.0
 - Ray 1.13.0
 
 To be able to reproduce congestion control results, you will also need to install:
@@ -33,6 +33,7 @@ To be able to reproduce congestion control results, you will also need to instal
 
 Building RayNet consists in several compilation and linkink steps:
 
+- Clone this repo and its submodules
 - Compile Omnet++ libraries
 - Compile the required simulation libraries (e.g. INET) and **RLComponents**; 
 - Compile the python binding module distributed with this repository and link with libraries above
@@ -40,11 +41,20 @@ Building RayNet consists in several compilation and linkink steps:
 
 The new python module can now be imported and used to implement environments following the OpenAI Gym API.
 
-### Step 1 - Build Omnet++ libraries 
+
+### Step 1 - Clone this repo
+Clone this repository and its submodules
+
+```
+git clone --recurse-submodules -j8 
+```
+
+
+### Step 2 - Build Omnet++ libraries 
 
 Download [Omnet++](https://omnetpp.org/download/) (version 5.6.2) and install in HOME directory, following [these](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf) instructions. 
 
-### Step 2 - Build simulation libraries.
+### Step 3 - Build simulation libraries.
 
 Libraries should be compiled using the **opp_makemake** utility provided by Omnet++. This utility generates the Makefile to compile library components to be used with Omnet++.
 
@@ -58,7 +68,7 @@ The script _build.sh_ contains instruction to build the simulation components.
 
 P.S. The command line instructions to build INET are not included in the _build.sh_ script. Follow the library's instruction and build the library in your HOME directory.
 
-### Step 3 - Compile binding module
+### Step 4 - Compile binding module
 
 The binding module is build using **cmake**:
 
@@ -71,7 +81,7 @@ make
 
 The output is a python module that can be imported with the standard _import_ clause in a python script. The name of the module is defined in the _CMakeLists.txt_.
 
-### Step 4
+### Step 5
 
 RayNet was developped on Python 3.10. 
 
