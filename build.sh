@@ -60,7 +60,7 @@ export RAYNET_FEATURE=$feature
 
 if [ "$mode" = "debug" ]
 then
-	cd $HOME/inet4.4
+	cd $HOME/inet4.5
 	make -j32 MODE=debug
 
 
@@ -99,7 +99,7 @@ fi
 
 if [ "$mode" = "release" ]
 then
-	cd $HOME/inet4.4
+	cd $HOME/inet4.5
 	make -j32 MODE=release
 
 	echo "Building release libraries..." && \
