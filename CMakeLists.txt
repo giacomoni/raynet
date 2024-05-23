@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX _dbg)
 
 
-set(INET_MODEL_PATH $ENV{HOME}/inet4.4/src)
+set(INET_MODEL_PATH $ENV{HOME}/inet4.5/src)
 set(TCPPACED_PATH ${PROJECT_SOURCE_DIR}/simlibs/TcpPaced/src)
 set(RLCOMPONENTS_PATH ${PROJECT_SOURCE_DIR}/simlibs/RLComponents/src)
 set(RLCC_PATH ${PROJECT_SOURCE_DIR}/simlibs/RLCC/src)
