@@ -7,9 +7,9 @@
 	branch = stable
 [submodule "simlibs/rdp"]
 	path = simlibs/rdp
-	url = git@github.com:giacomoni/rdp.git
+	url = https://github.com/giacomoni/rdp.git
 	branch = omnetpp6
 [submodule "simlibs/ecmp"]
 	path = simlibs/ecmp
-	url = git@github.com:giacomoni/ecmp.git
+	url = https://github.com/giacomoni/ecmp.git
 	branch = omnetpp6
