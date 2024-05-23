@@ -65,15 +65,6 @@ then
 
 
 	echo "Building debug libraries..." && \
-	# Build ecmp debug
-	cd $RAYNET_HOME/simlibs/ecmp && \
-	make makefilesdebug && \
-	make -j32 MODE=debug
-
-	# Build rdp debug
-	cd $RAYNET_HOME/simlibs/rdp && \
-	make makefilesdebug && \
-	make -j32 MODE=debug
 
 	# Build RLComponents debug
 	cd $RAYNET_HOME/simlibs/RLComponents && \
@@ -103,21 +94,11 @@ then
 	make -j32 MODE=release
 
 	echo "Building release libraries..." && \
-	# Build ecmp release
-	cd $RAYNET_HOME/simlibs/ecmp && \
-	make makefilesrelease && \
-	make -j32 MODE=release
-
-	# Build rdp release
-	cd $RAYNET_HOME/simlibs/rdp && \
-	make makefilesrelease && \
-	make -j32 MODE=release
-
+	
 	# Build RLComponents release
 	cd $RAYNET_HOME/simlibs/RLComponents && \
 	make makefilesrelease && \
 	make -j32 MODE=release
-
 
 	# Build TcpPaced release
 	cd $RAYNET_HOME/simlibs/TcpPaced && \
@@ -151,13 +132,5 @@ then
 	cmake -DCMAKE_BUILD_TYPE=Release ../ && \
 	make -j32
 fi
-
-
-
-
-
-
-
-
 
 

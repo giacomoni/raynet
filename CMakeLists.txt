@@ -11,15 +11,13 @@ set(INET_MODEL_PATH $ENV{HOME}/inet4.5/src)
 set(TCPPACED_PATH ${PROJECT_SOURCE_DIR}/simlibs/TcpPaced/src)
 set(RLCOMPONENTS_PATH ${PROJECT_SOURCE_DIR}/simlibs/RLComponents/src)
 set(RLCC_PATH ${PROJECT_SOURCE_DIR}/simlibs/RLCC/src)
-set(ECMP_PATH ${PROJECT_SOURCE_DIR}/simlibs/ecmp/src)
-set(RDP_PATH ${PROJECT_SOURCE_DIR}/simlibs/rdp/src)
 set(CARTPOLE_PATH ${PROJECT_SOURCE_DIR}/simlibs/cartpole/src)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 
 # Declare Release and Debug libraries
-set(MY_LIB_LINK_LIBRARIES_RELEASE optimized oppsim optimized oppcommon optimized oppcmdenv optimized Cmdrlenv optimized oppnedxml optimized oppenvir optimized -Wl,--no-as-needed INET optimized -Wl,--no-as-needed TcpPaced optimized -Wl,--no-as-needed rdp optimized -Wl,--no-as-needed ecmp optimized -Wl,--no-as-needed RLCC optimized -Wl,--no-as-needed RLComponents optimized -Wl,--no-as-needed rdp optimized -Wl,--no-as-needed cartpole)
-set(MY_LIB_LINK_LIBRARIES_DEBUG debug oppsim_dbg debug oppcommon_dbg debug oppcmdenv_dbg debug Cmdrlenv debug oppnedxml_dbg debug oppenvir_dbg debug -Wl,--no-as-needed INET_dbg debug -Wl,--no-as-needed TcpPaced_dbg debug -Wl,--no-as-needed rdp_dbg debug -Wl,--no-as-needed ecmp_dbg debug -Wl,--no-as-needed TcpPaced_dbg debug -Wl,--no-as-needed RLComponents_dbg debug -Wl,--no-as-needed RLCC_dbg debug -Wl,--no-as-needed rdp_dbg  debug -Wl,--no-as-needed cartpole_dbg)
+set(MY_LIB_LINK_LIBRARIES_RELEASE optimized oppsim optimized oppcommon optimized oppcmdenv optimized Cmdrlenv optimized oppnedxml optimized oppenvir optimized -Wl,--no-as-needed INET optimized -Wl,--no-as-needed TcpPaced optimized -Wl,--no-as-needed RLCC optimized -Wl,--no-as-needed RLComponents optimized -Wl,--no-as-needed cartpole)
+set(MY_LIB_LINK_LIBRARIES_DEBUG debug oppsim_dbg debug oppcommon_dbg debug oppcmdenv_dbg debug Cmdrlenv debug oppnedxml_dbg debug oppenvir_dbg debug -Wl,--no-as-needed INET_dbg debug -Wl,--no-as-needed TcpPaced_dbg debug -Wl,--no-as-needed TcpPaced_dbg debug -Wl,--no-as-needed RLComponents_dbg debug -Wl,--no-as-needed RLCC_dbg debug -Wl,--no-as-needed cartpole_dbg)
 
 
 find_package(OmnetPP 6.0.1 REQUIRED)
@@ -28,8 +26,8 @@ include(OmnetppHelpers)
 
 add_compile_options(-fpermissive -fno-omit-frame-pointer -fPIC -MMD -MP -MF )
 add_compile_definitions($ENV{RAYNET_FEATURE} HAVE_SWAPCONTEXT  WITH_NETBUILDER)
-include_directories(/usr/include/python3.8 ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/extern/pybind11/include ${OMNETPP_INCLUDE_DIR} ${OMNETPP_ROOT}/include ${OMNETPP_ROOT}/src ${TCPPACED_PATH}  ${RLCOMPONENTS_PATH} ${RLCC_PATH} ${RDP_PATH} ${CARTPOLE_PATH})
-link_directories(${OMNETPP_ROOT}/lib ${INET_MODEL_PATH}  ${ECMP_PATH} ${RDP_PATH} ${TCPPACED_PATH} ${RLCOMPONENTS_PATH} ${RLCC_PATH} ${RDP_PATH}  ${CARTPOLE_PATH})
+include_directories(/usr/include/python3.8 ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/extern/pybind11/include ${OMNETPP_INCLUDE_DIR} ${OMNETPP_ROOT}/include ${OMNETPP_ROOT}/src ${TCPPACED_PATH}  ${RLCOMPONENTS_PATH} ${RLCC_PATH} ${CARTPOLE_PATH})
+link_directories(${OMNETPP_ROOT}/lib ${INET_MODEL_PATH} ${TCPPACED_PATH} ${RLCOMPONENTS_PATH} ${RLCC_PATH} ${CARTPOLE_PATH})
 
 
 add_library(rlomnet SHARED ${PROJECT_SOURCE_DIR}/src/GymApi.cc)
